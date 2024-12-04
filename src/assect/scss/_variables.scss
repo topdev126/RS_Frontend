@@ -1,0 +1,91 @@
+//
+// variables.scss
+//
+
+
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;500;600;700&display=swap');
+
+
+// Color
+$white:                     #ffffff;
+
+$primary:                   #38bdf8;
+$secondary:                 #5a6d90;
+$success:                   #16a34a;
+$warning:                   #fbbf24;
+$info:                      #22d3ee;
+$danger:                    #dc2626;
+$dark:                      #1e293b;
+$black:                     #161c2d;
+$muted:                     #94a3b8;
+$light:                     #f8f9fc;
+
+// Gray
+$gray-100:                  #f8f9fa;
+$gray-200:                  #f1f5f9;
+$gray-300:                  #dee2e6;
+$gray-400:                  #ced4da;
+$gray-500:                  #adb5bd;
+$gray-600:                  #6c757d; 
+$gray-700:                  #495057;
+
+//Body Background
+$shadow:                    0 0 3px rgba($dark,.15);
+$shadow-md:                 0 5px 13px rgba($dark, .2);
+$shadow-lg:                 0 10px 25px rgba($dark, 0.15);
+$footer:                    lighten($black, 6%);
+
+// Base font
+$font-size-base:            17px;
+
+$font-family-base:          'League Spartan', sans-serif;
+$font-family-secondary:     'League Spartan', sans-serif;
+
+//Color Picker/Switcher
+$blue:                      #38bdf8;
+$purple:                    #7b2cbf;
+$yellow:                    #facc15;
+$red:                       #dc2626;
+$green:                     #16a34a;
+$orange:                    #f97316;
+$rose:                      #fd9a89;
+
+// Overlay
+$overlay:                   rgba($dark, 0.65);
+$linear-gradient:           linear-gradient(to bottom, rgba($black, 0) 0%, rgba($black, 0.0) 50%, rgba($black, 0.3) 80%, rgba($black, 1) 100%);
+$linear-gradient-2:         linear-gradient(to bottom, rgba($black, 0) 0%, rgba($black, 0.3) 50%, rgba($black, 0.7) 75%, rgba($black, 1) 100%);
+$gradient-overlay:          linear-gradient(to bottom, rgba($black, 0) 0%, rgba($black, 0.5) 25%, rgba($black, 0.75) 50%, rgba($black, 1) 100%);
+$gradient-overlay-2:        linear-gradient(to bottom, rgba($black,0.5) 0%, rgba($black,0.6) 25%, rgba($black,0.7) 50%, rgba($black,0.8) 100%);
+$primary-gradient-overlay:  linear-gradient(to top, rgba($primary, 0) 0%, rgba($primary, 0.1) 100%);
+$card-overlay:              linear-gradient(to bottom, transparent 0%, transparent 25%, transparent 35%, rgba($black, 0.9) 100%);
+
+$colors: (
+    "primary": $primary,
+    "secondary": $secondary,
+    "success": $success,
+    "warning": $warning,
+    "info": $info,
+    "danger": $danger,
+    "dark": $dark,
+    "muted": $muted,
+    "light": $light,
+    "footer": $footer
+);
+
+$heading-font-sizes: (
+    "h1, .fs-1": 42px,
+    "h2, .fs-2": 36px,
+    "h3, .fs-3": 30px,
+    "h4, .fs-4": 24px,
+    "h5, .fs-5": 20px,
+    "h6, .fs-6": 17px,
+);
+
+$display-font-sizes: (
+    "display-1": 80px,
+    "display-2": 72px,
+    "display-3": 64px,
+    "display-4": 56px,
+    "display-5": 48px,
+    "display-6": 40px,
+)

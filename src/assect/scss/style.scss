@@ -1,0 +1,45 @@
+/* Template Name: Pro-2 - Real Estate Bootstrap 5 Landing Template
+   Author: SasaSimic
+   Email: support@shreethemes.in
+   Website: https://shreethemes.in
+   Version: 1.0.0
+   Created: January 2022
+   File Description: Main Css file of the template
+*/
+
+/*********************************/
+/*         INDEX                 */
+/*================================
+ *     01.  Variables            *
+ *     02.  General              *
+ *     03.  Helper               *
+ *     04.  Bootstrap Custom     *
+ *     05.  Components           *
+ *     06.  Menu                 *
+ *     07.  Home / Landing       *
+ *     08.  About Us             *
+ *     09.  Blog                 *
+ *     11.  Countdown            *
+ *     12.  Features             *
+ *     13.  Testimonial          *
+ *     14.  Price                *
+ *     15.  Team                 *
+ *     16.  Contact              *
+ *     17.  Footer               *
+ ================================*/
+
+@import "variables";
+@import "general";
+@import "helper";
+@import "bootstrap-custom";
+@import "components";
+@import "menu";
+@import "home";
+@import "about";
+@import "blog";
+@import "countdown";
+@import "features";
+@import "testi";
+@import "team";
+@import "contact";
+@import "footer";

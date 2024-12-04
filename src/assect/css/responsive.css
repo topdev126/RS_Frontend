@@ -1,0 +1,6 @@
+@media (max-width: 1400px) {
+    .profile-dropdown {
+        position: absolute !important;
+        right: 0 !important;
+    }
+}

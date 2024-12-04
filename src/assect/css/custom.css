@@ -1,0 +1,50 @@
+@media (max-width: 1400px) {
+  .profile-dropdown {
+    position: absolute !important;
+    right: 0 !important;
+  }
+}
+
+.truncate {
+  display: block; /* Use block-level to enable truncation */
+  width: 100%; /* or set to a specific width */
+  white-space: nowrap; /* Prevent the text from wrapping */
+  overflow: hidden; /* Hide any overflow text */
+  text-overflow: ellipsis; /* Show ellipsis when text is truncated */
+}
+
+.sticky-column {
+  position: sticky;
+  top: 20%; /* Sticks to the top of the viewport */
+  height: 60vh; /* Optional: make the sticky column full height */
+  /* overflow-y: auto; Allow scrolling if content overflows */
+  z-index: 10; /* Make sure it's on top of other content if necessary */
+}
+
+.table-header {
+  color: #0e1112;
+}
+
+.tiny-one-item img {
+  width: 100%;
+  height: 33vw;
+  object-fit: cover;
+}
+
+.tiny-slider-container {
+  height: "35vw";
+  overflow: "hidden";
+  display: "flex";
+  justify-content: "center";
+  align-items: "center";
+  border-radius: "20px";
+}
+
+@media (max-width: 768px) {
+  .tiny-slider-container {
+    height: "50vw";
+  }
+  .tiny-one-item img {
+    height: 48vw;
+  }
+}

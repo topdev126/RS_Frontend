@@ -1,0 +1,186 @@
+//
+// Bootstrap-custom.scss
+//
+
+/*********************************/
+/*         Bootstrap-custom      */
+/*===============================*/
+
+.container {
+    @media (min-width: 1400px) {
+        max-width: 1140px !important;
+    }
+}
+
+.row > * {
+    position: relative;
+}
+
+@each $heading,
+$size in $heading-font-sizes {
+    #{$heading}, .#{$heading} {
+        font-size: $size !important;
+    }
+}
+
+@each $heading,
+$size in $display-font-sizes {
+    .#{$heading} {
+        font-size: $size !important;
+    }
+}
+
+@each $name,
+$value in $colors {
+    .bg-#{$name} {
+        background-color: #{$value} !important;
+    }
+    .bg-soft-#{$name} {
+        background-color: rgba($value, 0.05) !important;
+        color: #{$value} !important;
+    }
+    .bg-blur-#{$name} {
+        backdrop-filter: blur(12px);
+        background-color: rgba($value, 0.8);
+    }
+    .text-#{$name} {
+        color: #{$value} !important;
+    }
+    a {
+        &.text-#{$name} {
+            &:hover,
+            &:focus {
+                color: darken($value, 5%) !important;
+            }
+        }
+    }
+}
+
+.d-flex {
+    .flex-1 {
+        flex: 1;
+    }
+}
+
+.bg-black {
+    background: $black !important;
+}
+
+.text-white-50 {
+    color: rgba($white, 0.5);
+}
+
+/*********************************/
+/*         Video tag      */
+/*===============================*/
+video {
+    &:focus {
+        outline: none;
+    }
+}
+
+/*********************************/
+/*         LI      */
+/*===============================*/
+.list-inline-item:not(:last-child) {
+    margin-right: 0px;
+    margin-bottom: 5px;
+}
+
+/*********************************/
+/*         Border Radious      */
+/*===============================*/
+.sm-rounded-0 {
+    @media (max-width: 425px) {
+        border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
+    } 
+}
+
+/*********************************/
+/*         Border                */
+/*===============================*/
+//Border
+@each $name,
+$value in $colors {
+    .border-#{$name} {
+        border-color: #{$value} !important;
+    }
+}
+
+.border {
+    border: 1px solid $gray-200 !important;
+}
+.border-top {
+    border-top: 1px solid $gray-200!important;
+}
+.border-bottom {
+    border-bottom: 1px solid $gray-200 !important;    
+}
+.border-left {
+    border-left: 1px solid $gray-200 !important;    
+}
+.border-right {
+    border-right: 1px solid $gray-200 !important;    
+}
+
+.w-md-48 {
+    @media (min-width: 768px) {
+        width: 12rem!important;
+    }
+}
+
+.object-cover {
+    object-fit: cover!important;
+}
+
+/*********************************/
+/*         Small      */
+/*********************************/
+.small, small {
+    font-size: 90%;
+}
+
+/*********************************/
+/*         card       */
+/*********************************/
+.card {
+    color: $dark;
+    .card-body {
+        padding: 1.5rem;
+    }
+    border: none;
+    .card-img {
+        position: relative;
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            opacity: 0;
+            background: $card-overlay;
+            transition: all 0.5s ease;
+        }
+    }
+    &:hover {
+        .card-img {
+            .card-overlay {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+/**********************/
+/*         Modal      */
+/*====================*/
+.modal-content {
+    .modal-header {
+        button {
+            &.btn-close {
+                background: none;
+            }
+        }
+    }
+}

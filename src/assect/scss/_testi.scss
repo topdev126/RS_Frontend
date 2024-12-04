@@ -1,0 +1,54 @@
+//
+// testi.scss
+//
+
+/*********************************/
+/*         Testimonial           */
+/*===============================*/
+.tns-nav {
+    text-align: center;
+    margin-top: 10px;
+    button {
+        background: rgba($dark, 0.15);
+        border: 2px solid rgba($dark, 0.15) !important;
+        border-radius: 50%;
+        transition: all 0.5s ease;
+        border: none;
+        margin: 4px;
+        padding: 0;
+        &.tns-nav-active {
+            padding: 2px;
+            border-color: $primary !important;
+            background-color: $primary !important;
+        }
+    }
+}
+
+.tns-controls {
+    button[data-controls="prev"],
+    button[data-controls="next"] {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: $white;
+        color: $dark;
+        border: none;
+        transition: all 0.5s ease;
+        z-index: 1;
+        box-shadow: $shadow-lg;
+        &:hover {
+            background: $primary;
+            color: $white;
+        }
+    }
+    button[data-controls="prev"] {
+        left: 0;
+    }
+    button[data-controls="next"] {
+        right: 0;
+    }
+}

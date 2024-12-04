@@ -1,0 +1,55 @@
+//
+// _blog.scss
+//
+
+/*********************************/
+/*         Blog                  */
+/*===============================*/
+.blog {
+    .blog-image {
+        img {
+            transition: all 0.5s ease;
+        }
+    }
+    .blog-image {
+        .blog-tag{
+            position: absolute;
+            bottom: -30px;
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+    }
+    &:hover {
+        .blog-image {
+            img {
+                transform: scale(1.1);
+            }
+            .blog-tag{
+                bottom: 0;
+                opacity: 1;
+            }
+        }
+    }
+
+    .title,
+    .read-more {
+        &:hover{
+            color: $primary !important;
+        }
+    }
+}
+
+/*********************************/
+/*         Tagcloud              */
+/*===============================*/
+.tagcloud {
+    a {
+        background: $gray-100;
+        font-size: 14px;
+        transition: all 0.5s ease;
+        &:hover {
+            background: $primary;
+            color: $white !important;
+        }
+    }
+}
