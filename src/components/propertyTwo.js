@@ -8,10 +8,11 @@ import { FiHome, FiHeart, FiCamera } from "../assect/icons/vander";
 export default function PropertyTwo() {
   const [propertyData, setPropertyData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const apiUrl = process.env.REACT_APP_SERVER_URL;
 
   useEffect(() => {
     // Fetch data from the API
-    fetch("http://localhost:3002/api/admin/getCommRent")
+    fetch(`${apiUrl}/api/admin/getCommRent`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

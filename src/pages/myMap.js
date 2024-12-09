@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import axios from "axios";
 
 // Your Google Maps API Key
 const GOOGLE_MAPS_API_KEY = "AIzaSyCC40uAAaQ5MtL6TQOmHIAsUMlEQQDXVNo";
@@ -17,15 +16,15 @@ const RealEstateMap = ({ properties }) => {
     const fetchCoordinates = async () => {
       try {
         const fullAddress = `${properties.address}, ${properties.district}, Singapore`;
-        const response = await axios.get(GEOCODING_API_URL, {
-          params: {
-            address: fullAddress,
-            key: GOOGLE_MAPS_API_KEY,
-          },
-        });
+        const url = `${GEOCODING_API_URL}?address=${encodeURIComponent(
+          fullAddress
+        )}&key=${GOOGLE_MAPS_API_KEY}`;
 
-        if (response.data.status === "OK") {
-          const { lat, lng } = response.data.results[0].geometry.location;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.status === "OK") {
+          const { lat, lng } = data.results[0].geometry.location;
           setLocation({ lat, lng });
         } else {
           setError("Unable to find location");
@@ -43,7 +42,7 @@ const RealEstateMap = ({ properties }) => {
     <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
       <GoogleMap
         mapContainerStyle={{ height: "500px", width: "100%" }}
-        center={{ lat: 1.3521, lng: 103.8198 }}
+        center={location}
         zoom={10}
       >
         <Marker position={location} />

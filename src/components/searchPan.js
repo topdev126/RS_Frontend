@@ -7,6 +7,8 @@ import TextSearch from "./textSearch.js";
 import SearchSubProps from "./searchSubProps.js";
 import SearchSelect from "./searchSelect.js";
 import { Districts } from "./districts";
+import Spinner from "react-bootstrap/Spinner";
+import { MultiSelect } from "react-multi-select-component";
 
 import {
   FiDollarSign,
@@ -71,6 +73,7 @@ const SearchPan = ({
   setAddressKeys,
   nameKeys,
   setNameKeys,
+  searchloading,
 }) => {
   // const [searchKeywords, setSearchKeywords] = useState("");
   const [isMoreVisible, setIsMoreVisible] = useState(false); // State to toggle additional fields
@@ -127,15 +130,15 @@ const SearchPan = ({
   const resetSearchParams = () => {
     setMaxPrice(null);
     setMinPrice(null);
-    setSelectedPropType(null);
-    setSelectedAmenity(null);
-    setSelectedDistrict(null);
+    setSelectedPropType([]);
+    setSelectedAmenity([]);
+    setSelectedDistrict([]);
     setMinAreaVal(null);
     setMaxAreaVal(null);
-    setSelectedBaths(null);
-    setSelectedBeds(null);
-    setSelectedMrt(null);
-    setSelectedFurnishing(null);
+    setSelectedBaths([]);
+    setSelectedBeds([]);
+    setSelectedMrt([]);
+    setSelectedFurnishing([]);
     // setSearchKeywords("");
     setNameKeys("");
     setAddressKeys("");
@@ -143,6 +146,7 @@ const SearchPan = ({
     setTenureKeys("");
     setSelectedSubProperties([]);
     setSelectedSubAmenities([]);
+    setSelectedSubMrts([]);
   };
 
   const handleSubProps = (value) => {
@@ -187,6 +191,8 @@ const SearchPan = ({
     resetSearchParams();
   }, [db_index]);
 
+  console.log("======", selectedDistrict);
+
   return (
     <div className="mt-4">
       <div className="tab-content bg-white rounded-3 sm-rounded-0 shadow">
@@ -211,6 +217,16 @@ const SearchPan = ({
                   </div>
                 </div>
 
+                <SearchSelect
+                  labelName="District"
+                  Props={Districts}
+                  selectedPropType={selectedDistrict}
+                  changeProps={setSelectedDistrict}
+                  Icon={FaMapMarkerAlt}
+                  col={3}
+                />
+
+                {/* 
                 <div className="col-lg-3 col-md-6 col-12">
                   <div className="mb-3">
                     <label className="form-label fs-6">District :</label>
@@ -224,7 +240,7 @@ const SearchPan = ({
                       />
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="col-lg-3 col-md-6 col-12">
                   <div className="mb-3">
@@ -264,30 +280,26 @@ const SearchPan = ({
                   <>
                     <SearchSelect
                       labelName="Select Propery types"
-                      Props={Object.keys(Props).map((item) => ({
+                      Props={Props.map((item) => ({
                         value: item,
                         label: item,
                       }))}
                       selectedPropType={selectedPropType}
                       changeProps={changeProps}
                       Icon={FaThLarge}
+                      col={3}
                     />
-                    <div className="col-lg-3 col-md-6 col-12">
-                      <div className="mb-3">
-                        <label className="form-label fs-6">Address :</label>
-                        <div className="filter-search-form position-relative filter-border">
-                          <FiMap className="fea icon-ex-md icons" />
-                          <input
-                            name="name"
-                            type="text"
-                            className="form-control filter-input-box bg-light border-0"
-                            placeholder="Search by Address"
-                            value={addressKeys}
-                            onChange={(e) => setAddressKeys(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    <SearchSelect
+                      labelName="Select Amentites"
+                      Props={Amenities.map((item) => ({
+                        value: item,
+                        label: item,
+                      }))}
+                      selectedPropType={selectedAmenity}
+                      changeProps={changeAmenity}
+                      Icon={FaSwimmingPool}
+                      col={3}
+                    />
                     <div className="col-lg-3 col-md-6 col-12">
                       <div className="mb-3">
                         <label className="form-label fs-6">Min Area :</label>
@@ -325,26 +337,23 @@ const SearchPan = ({
                         </div>
                       </div>
                     </div>
-                    {/* SubProperties */}
-                    {selectedPropType && (
-                      <SearchSubProps
-                        labelName={`Select Property Type (${selectedPropType.value})`}
-                        subProperties={subProperties}
-                        selectedSubProperties={selectedSubProperties}
-                        handleSubProps={handleSubProps}
-                      />
-                    )}
 
-                    <SearchSelect
-                      labelName="Select Amentites"
-                      Props={Object.keys(Amenities).map((item) => ({
-                        value: item,
-                        label: item,
-                      }))}
-                      selectedPropType={selectedAmenity}
-                      changeProps={changeAmenity}
-                      Icon={FaSwimmingPool}
-                    />
+                    <div className="col-lg-3 col-md-6 col-12">
+                      <div className="mb-3">
+                        <label className="form-label fs-6">Address :</label>
+                        <div className="filter-search-form position-relative filter-border">
+                          <FiMap className="fea icon-ex-md icons" />
+                          <input
+                            name="name"
+                            type="text"
+                            className="form-control filter-input-box bg-light border-0"
+                            placeholder="Search by Address"
+                            value={addressKeys}
+                            onChange={(e) => setAddressKeys(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
                     <div className="col-lg-3 col-md-6 col-12">
                       <div className="mb-3">
                         <label className="form-label fs-6">Dev Name :</label>
@@ -369,6 +378,7 @@ const SearchPan = ({
                           selectedPropType={selectedBeds}
                           changeProps={setSelectedBeds}
                           Icon={FaBed}
+                          col={3}
                         />
                         <SearchSelect
                           labelName="Number of Baths"
@@ -376,30 +386,23 @@ const SearchPan = ({
                           selectedPropType={selectedBaths}
                           changeProps={setSelectedBaths}
                           Icon={FaShower}
+                          col={3}
                         />
                       </>
-                    )}
-                    {/* SubProperties */}
-                    {selectedAmenity && (
-                      <SearchSubProps
-                        labelName={`Select Amenities (${selectedAmenity.value})`}
-                        subProperties={subAmenities}
-                        selectedSubProperties={selectedSubAmenities}
-                        handleSubProps={handleSubAmens}
-                      />
                     )}
 
                     {(db_index === 2 || db_index === 3) && (
                       <>
                         <SearchSelect
                           labelName="Select MRT"
-                          Props={Object.keys(MrtGroups).map((item) => ({
+                          Props={MrtGroups.map((item) => ({
                             value: item,
                             label: item,
                           }))}
                           selectedPropType={selectedMrt}
                           changeProps={changeMrt}
                           Icon={FaSubway}
+                          col={3}
                         />
                         <SearchSelect
                           labelName="Select Furnishing"
@@ -407,6 +410,7 @@ const SearchPan = ({
                           selectedPropType={selectedFurnishing}
                           changeProps={setSelectedFurnishing}
                           Icon={FaCouch}
+                          col={3}
                         />
                         <div className="col-lg-3 col-md-6 col-12">
                           <div className="mb-3">
@@ -426,45 +430,54 @@ const SearchPan = ({
                         </div>
                       </>
                     )}
-                    {selectedMrt && (
-                      <SearchSubProps
-                        labelName={`Select Mrt (${selectedMrt.value})`}
-                        subProperties={subMrts}
-                        selectedSubProperties={selectedSubMrts}
-                        handleSubProps={handleSubMrts}
-                      />
-                    )}
                   </>
                 )}
+              </div>
 
-                <div className="col-12 d-flex justify-content-between align-items-center">
-                  <div className="d-flex me-auto">
-                    <button
-                      type="button"
-                      style={{ color: "black", backgroundColor: "#38bdf8" }}
-                      className="btn me-2 py-2 px-4"
-                      onClick={() => setIsMoreVisible(!isMoreVisible)}
-                    >
-                      {isMoreVisible ? "Less" : "More"}
-                    </button>
-                    <button
-                      type="button"
-                      style={{ color: "black", backgroundColor: "#38bdf8" }}
-                      className="btn me-2 py-2 px-4"
-                      onClick={() => resetSearchParams()}
-                    >
-                      Reset
-                    </button>
-                  </div>
-                  <input
-                    type="submit"
-                    id="search"
-                    name="search"
-                    style={{ color: "black", backgroundColor: "#16a34a" }}
-                    className="btn searchbtn py-2 px-4"
-                    value="Search"
-                  />
+              <div className="col-12 d-flex justify-content-between align-items-center">
+                <div className="d-flex me-auto">
+                  <button
+                    type="button"
+                    style={{ color: "black", backgroundColor: "#38bdf8" }}
+                    className="btn me-2 py-2 px-4"
+                    onClick={() => setIsMoreVisible(!isMoreVisible)}
+                  >
+                    {isMoreVisible ? "Less" : "More"}
+                  </button>
+                  <button
+                    type="button"
+                    style={{ color: "black", backgroundColor: "#38bdf8" }}
+                    className="btn me-2 py-2 px-4"
+                    onClick={() => resetSearchParams()}
+                  >
+                    Reset
+                  </button>
                 </div>
+                <button
+                  type="submit"
+                  id="search"
+                  name="search"
+                  style={{
+                    color: "black",
+                    backgroundColor: "#16a34a",
+                    width: "100px", // Set a fixed width
+                    textAlign: "center", // Center the content
+                  }}
+                  className="btn searchbtn py-2 px-4"
+                  disabled={searchloading}
+                >
+                  {searchloading ? (
+                    <Spinner
+                      as="span"
+                      animation="grow"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    "Search"
+                  )}
+                </button>
               </div>
             </div>
           </form>

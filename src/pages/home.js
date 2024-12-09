@@ -9,15 +9,21 @@ import Broker from "../components/broker";
 import ClientTwo from "../components/clientTwo";
 import Blog from "../components/blog";
 import FooterTopImage from "../components/FoterTopImage";
-import LoadingModal from "../components/loading";
+// import LoadingModal from "../components/loading";
 import CountUp from "react-countup";
 import ModalVideo from "react-modal-video";
 import "../../node_modules/react-modal-video/css/modal-video.css";
 import Footer from "../components/footer";
 import { useDispatch } from "react-redux";
 import { getRelatedSearch } from "../redux/search/searchSlice.js";
+import { FaRegHeart } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 export default function HomePage({ param }) {
+  const { currentUser } = useSelector((state) => state.user);
+
   const initAreaMinVal = 0;
   const initAreaMaxVal = 0;
 
@@ -32,16 +38,16 @@ export default function HomePage({ param }) {
 
   const [minPrice, setMinPrice] = useState(null);
   const [maxPrice, setMaxPrice] = useState(null);
-  const [selectedPropType, setSelectedPropType] = useState(null);
-  const [selectedDistrict, setSelectedDistrict] = useState(null);
+  const [selectedPropType, setSelectedPropType] = useState([]);
+  const [selectedDistrict, setSelectedDistrict] = useState([]);
   const [minAreaVal, setMinAreaVal] = useState(initAreaMinVal);
   const [maxAreaVal, setMaxAreaVal] = useState(initAreaMaxVal);
-  const [selectedBeds, setSelectedBeds] = useState(null);
-  const [selectedBaths, setSelectedBaths] = useState(null);
+  const [selectedBeds, setSelectedBeds] = useState([]);
+  const [selectedBaths, setSelectedBaths] = useState([]);
 
-  const [selectedAmenity, setSelectedAmenity] = useState(null);
-  const [selectedMrt, setSelectedMrt] = useState(null);
-  const [selectedFurnishing, setSelectedFurnishing] = useState(null);
+  const [selectedAmenity, setSelectedAmenity] = useState([]);
+  const [selectedMrt, setSelectedMrt] = useState([]);
+  const [selectedFurnishing, setSelectedFurnishing] = useState([]);
   const [selectedSubProperties, setSelectedSubProperties] = useState([]);
   const [selectedSubAmenities, setSelectedSubAmenities] = useState([]);
   const [selectedSubMrts, setSelectedSubMrts] = useState([]);
@@ -53,6 +59,8 @@ export default function HomePage({ param }) {
   const [tenureKeys, setTenureKeys] = useState("");
   const [addressKeys, setAddressKeys] = useState("");
   const [nameKeys, setNameKeys] = useState("");
+
+  const [count, setCount] = useState([0, 0, 0, 0]);
 
   const dispatch = useDispatch();
   const apiUrl = process.env.REACT_APP_SERVER_URL;
@@ -84,6 +92,46 @@ export default function HomePage({ param }) {
     const shuffled = [...array].sort(() => 0.5 - Math.random()); // Shuffle the array
     return shuffled.slice(0, count); // Get the first 'count' elements
   };
+  const setFavorite = async (id) => {
+    const payload = {
+      list_id: id,
+      user_id: currentUser._id,
+      cate: db_index,
+    };
+    fetch(`${apiUrl}/api/admin/setFavorite`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        toast.success(data.message);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      });
+  };
+  const deleteList = async (id) => {
+    alert("del");
+    const payload = {
+      list_id: id,
+      user_id: currentUser._id,
+      cate: db_index,
+    };
+    fetch(`${apiUrl}/api/admin/deleteList`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        toast.success(data.message);
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      });
+  };
+  console.log("^^^^^^^", selectedSubProperties);
   const handleSearch = (e) => {
     if (e) {
       e.preventDefault();
@@ -95,18 +143,18 @@ export default function HomePage({ param }) {
       nameKeys: nameKeys,
       minPrice: minPrice,
       maxPrice: maxPrice,
-      district: selectedDistrict?.value,
+      district: selectedDistrict.map(element => element.value),
       minAreaVal: minAreaVal,
       maxAreaVal: maxAreaVal,
-      BedsNums: selectedBeds,
-      BathsNums: selectedBaths,
+      BedsNums: selectedBeds.map(element => element.value),
+      BathsNums: selectedBaths.map(element => element.value),
       tenureKeys: tenureKeys,
       addressKeys: addressKeys,
       devNameKeys: devNameKeys,
-      selectedSubMrts: selectedSubMrts,
-      selectedSubAmenities: selectedSubAmenities,
-      selectedSubProperties: selectedSubProperties,
-      selectedFurnishing: selectedFurnishing,
+      selectedSubMrts: selectedMrt.map(element => element.value),
+      selectedSubAmenities: selectedAmenity.map(element => element.value),
+      selectedSubProperties: selectedPropType.map(element => element.value),
+      selectedFurnishing: selectedFurnishing.map(element => element.value),
 
       currentPage: currentPage,
       itemsPerPage: itemsPerPage,
@@ -128,6 +176,19 @@ export default function HomePage({ param }) {
       .catch((error) => {
         console.error("Error fetching properties:", error);
         setSearchloading(false);
+      });
+
+    fetch(`${apiUrl}/api/admin/getDBCount`)
+      .then((response) => response.json())
+      .then((data) => {
+        setCount((prevCount) => {
+          const updatedCount = [...prevCount]; // Spread the previous values
+          updatedCount[0] = data.count; // Update the second element
+          updatedCount[1] = data.count1;
+          updatedCount[2] = data.count2;
+          updatedCount[3] = data.count3;
+          return updatedCount; // Return the new array
+        });
       });
   };
   useEffect(() => {
@@ -392,9 +453,12 @@ export default function HomePage({ param }) {
           <div className="row g-4 mt-0">
             {/* <div >Searched Items: 10000</div> */}
 
-            <div class="card text-center">
-              <h2 class="card-title">
-                <span class="badge bg-secondary" style={{ padding: "12px" }}>
+            <div className="card text-center">
+              <h2 className="card-title">
+                <span
+                  className="badge bg-secondary"
+                  style={{ padding: "12px" }}
+                >
                   Total {totalSearched} Items found based on your search
                 </span>
               </h2>
@@ -417,6 +481,32 @@ export default function HomePage({ param }) {
                         }}
                         alt=""
                       />
+                      <ul className="list-unstyled property-icon">
+                        {currentUser && (
+                          <>
+                            <li className="mt-1">
+                              <label
+                                onClick={() => setFavorite(item._id)}
+                                className="btn btn-sm btn-icon btn-pills btn-primary"
+                              >
+                                <FaRegHeart className="icons" />
+                              </label>
+                            </li>
+                          </>
+                        )}
+                        {currentUser && currentUser.role == 5 && (
+                          <>
+                            <li className="mt-1">
+                              <label
+                                onClick={() => deleteList(item._id)}
+                                className="btn btn-sm btn-icon btn-pills btn-primary"
+                              >
+                                <MdDelete className="icons" />
+                              </label>
+                            </li>
+                          </>
+                        )}
+                      </ul>
                     </div>
                     <div className="card-body content p-3">
                       <Link
@@ -609,41 +699,61 @@ export default function HomePage({ param }) {
                 </p>
 
                 <div className="row">
-                  <div className="col-4 py-3">
+                  <div className="col-3 py-3">
                     <div className="counter-box text-center">
                       <h1 className="mb-0 fw-semibold">
                         <CountUp
                           start={0}
-                          end={1548}
+                          end={count[0]}
                           className="counter-value"
                         />
-                        +
                       </h1>
                       <h6 className="counter-head text-muted fw-normal">
-                        Investment
+                        Commercial Sale
                       </h6>
                     </div>
                   </div>
 
-                  <div className="col-4 py-3">
+                  <div className="col-3 py-3">
                     <div className="counter-box text-center">
                       <h1 className="mb-0 fw-semibold">
-                        <CountUp start={0} end={25} className="counter-value" />
-                        +
+                        <CountUp
+                          start={0}
+                          end={count[1]}
+                          className="counter-value"
+                        />
                       </h1>
                       <h6 className="counter-head text-muted fw-normal">
-                        Awards
+                        Commercial Rent
                       </h6>
                     </div>
                   </div>
 
-                  <div className="col-4 py-3">
+                  <div className="col-3 py-3">
                     <div className="counter-box text-center">
                       <h1 className="mb-0 fw-semibold">
-                        <CountUp start={0} end={9} className="counter-value" />+
+                        <CountUp
+                          start={0}
+                          end={count[2]}
+                          className="counter-value"
+                        />
                       </h1>
                       <h6 className="counter-head text-muted fw-normal">
-                        Profitability
+                        Residential Sale
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-3 py-3">
+                    <div className="counter-box text-center">
+                      <h1 className="mb-0 fw-semibold">
+                        <CountUp
+                          start={0}
+                          end={count[3]}
+                          className="counter-value"
+                        />
+                      </h1>
+                      <h6 className="counter-head text-muted fw-normal">
+                        Residential Rent
                       </h6>
                     </div>
                   </div>

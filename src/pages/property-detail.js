@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faComment } from "@fortawesome/free-solid-svg-icons"; // Message icon
 import { Districts_Arr as districts } from "../components/districts";
-
+import RealEstateMap from "./myMap"
 export default function PropertyDetailsTwo() {
   const labels = [
     "Commercial | Rent",
@@ -26,7 +26,6 @@ export default function PropertyDetailsTwo() {
 
   const params = useParams();
   const id = params.id;
-  console.log("id: ", id, params.idb);
   const apiUrl = process.env.REACT_APP_SERVER_URL;
   const settings = {
     container: ".tiny-one-item",
@@ -94,7 +93,6 @@ export default function PropertyDetailsTwo() {
   if (loading) {
     return <div>Loading...</div>;
   }
-  console.log("len: ", currentItem);
   return (
     <>
       <Navbar
@@ -362,13 +360,14 @@ export default function PropertyDetailsTwo() {
                   <div className="col-lg-12">
                     <div className="card map border-0">
                       <div className="card-body p-0">
-                        <iframe
+                        {/* <iframe
                           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d39206.002432144705!2d-95.4973981212445!3d29.709510002925988!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8640c16de81f3ca5%3A0xf43e0b60ae539ac9!2sGerald+D.+Hines+Waterwall+Park!5e0!3m2!1sen!2sin!4v1566305861440!5m2!1sen!2sin"
                           title="Townter"
                           className="rounded-3"
                           style={{ border: "0" }}
                           allowFullScreen
-                        ></iframe>
+                        ></iframe> */}
+                        <RealEstateMap properties={currentItem} />
                       </div>
                     </div>
                   </div>

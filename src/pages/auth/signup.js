@@ -5,6 +5,7 @@ import bg3 from "../../assect/images/bg/03.jpg";
 import logo from "../../assect/images/logo-icon-80.png";
 
 export default function Signup() {
+  const apiUrl = process.env.REACT_APP_SERVER_URL;
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -18,7 +19,7 @@ export default function Signup() {
     setLoading(true);
     console.log("Submitting form data:", formData);
 
-    const res = await fetch("http://127.0.0.1:3002/api/auth/signup", {
+    const res = await fetch(`${apiUrl}/api/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

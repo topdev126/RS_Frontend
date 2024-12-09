@@ -6,14 +6,17 @@ import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { firebaseApp } from "../firebase.js";
 import { useDispatch } from "react-redux";
 import { signinFailed, signinSuccess } from "../../redux/user/userSlice.js";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export default function AuthLogin() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const pwdRef = useRef();
   const emailRef = useRef();
-  const handleLogin = async () => {
+  const handleLogin = async (event) => {
+    event.preventDefault();
     try {
+
       const res = await fetch("http://127.0.0.1:3002/api/auth/signin", {
         method: "POST",
         headers: {
@@ -27,13 +30,15 @@ export default function AuthLogin() {
       const userData = await res.json();
       if (userData.success === false) {
         dispatch(signinFailed(userData.message));
-        toast(userData.message);
+        toast.error(userData.message);
       } else {
         dispatch(signinSuccess(userData));
         navigate("/");
+        toast.success("Successfully Signin");
       }
     } catch (error) {
       console.log(error);
+      toast.error(error);
     }
   };
   const handleGoogleSignIn = async () => {
@@ -41,7 +46,7 @@ export default function AuthLogin() {
       const auth = getAuth(firebaseApp);
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      const { displayName, email, photoURL } = result.user;
+      const { displayName, email, photoURL, role } = result.user;
 
       //=====Fetch The Data To Backend====//
       const res = await fetch("http://127.0.0.1:3002/api/auth/google", {
@@ -53,17 +58,20 @@ export default function AuthLogin() {
           name: displayName,
           email,
           photo: photoURL,
+          role,
         }),
       });
       const userData = await res.json();
       if (userData.success === false) {
         dispatch(signinFailed(userData.message));
-        toast(userData.message);
+        toast.error(userData.message);
       } else {
         dispatch(signinSuccess(userData));
         navigate("/");
+        toast.success("Successfully Signin");
       }
     } catch (error) {
+      toast.error(error);
       console.log(error);
     }
   };

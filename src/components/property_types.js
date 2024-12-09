@@ -1,6 +1,5 @@
 export const Property_types = [
-  {
-    Commercial: [
+  [
       "Shop / Shophouse",
       "Food & Beverage",
       "Office",
@@ -11,8 +10,6 @@ export const Property_types = [
       "e-Business",
       "Shop",
       "Childcare",
-    ],
-    Industrial: [
       "Light Industrial (B1)",
       "Factory / Workshop (B2)",
       "Warehouse",
@@ -21,38 +18,27 @@ export const Property_types = [
       "Showroom",
       "Factory",
       "Industrial Office",
-    ],
-    LandAndDevelopment: [
       "Land with Building / En-bloc",
       "Land Only",
       "Land with Building",
-    ],
-    SpecializedUse: ["Dormitory"],
-  },
-  {
-    Condo: [
+  ],
+  [
       "Condo Whole Unit",
       "Condo",
       "Executive Condo",
       "Executive Condo Whole Unit",
-    ],
-    Apartments: [
       "Apartment Whole Unit",
       "Apartment",
       "Walk-up",
       "Walk-up Whole Unit",
       "Service Apartment",
       "Service Apartment Whole Unit",
-    ],
-    HDBFlats: [
       "HDB",
       "HDB 2 Rooms",
       "HDB 3 Rooms",
       "HDB 4 Rooms",
       "HDB 5 Rooms",
       "HDB Executive",
-    ],
-    LandedHouses: [
       "Semi-Detached House",
       "Terraced House",
       "Good Class Bungalow",
@@ -62,7 +48,79 @@ export const Property_types = [
       "Cluster House Whole Unit",
       "Townhouse",
       "Conservation House",
-    ],
-    MixedAndSpecialized: ["Shophouse", "Landed", "Land Only"],
-  },
+      "Shophouse",
+      "Landed",
+      "Land Only",
+  ],
 ];
+
+
+
+// export const Property_types = [
+//   {
+//     Commercial: [
+//       "Shop / Shophouse",
+//       "Food & Beverage",
+//       "Office",
+//       "Mall Shop",
+//       "Other Retail",
+//       "Medical",
+//       "Retail",
+//       "e-Business",
+//       "Shop",
+//       "Childcare",
+//     ],
+//     Industrial: [
+//       "Light Industrial (B1)",
+//       "Factory / Workshop (B2)",
+//       "Warehouse",
+//       "Business / Science Park",
+//       "General Industrial",
+//       "Showroom",
+//       "Factory",
+//       "Industrial Office",
+//     ],
+//     LandAndDevelopment: [
+//       "Land with Building / En-bloc",
+//       "Land Only",
+//       "Land with Building",
+//     ],
+//     SpecializedUse: ["Dormitory"],
+//   },
+//   {
+//     Condo: [
+//       "Condo Whole Unit",
+//       "Condo",
+//       "Executive Condo",
+//       "Executive Condo Whole Unit",
+//     ],
+//     Apartments: [
+//       "Apartment Whole Unit",
+//       "Apartment",
+//       "Walk-up",
+//       "Walk-up Whole Unit",
+//       "Service Apartment",
+//       "Service Apartment Whole Unit",
+//     ],
+//     HDBFlats: [
+//       "HDB",
+//       "HDB 2 Rooms",
+//       "HDB 3 Rooms",
+//       "HDB 4 Rooms",
+//       "HDB 5 Rooms",
+//       "HDB Executive",
+//     ],
+//     LandedHouses: [
+//       "Semi-Detached House",
+//       "Terraced House",
+//       "Good Class Bungalow",
+//       "Corner Terrace",
+//       "Bungalow",
+//       "Cluster House",
+//       "Cluster House Whole Unit",
+//       "Townhouse",
+//       "Conservation House",
+//     ],
+//     MixedAndSpecialized: ["Shophouse", "Landed", "Land Only"],
+//   },
+// ];
