@@ -272,6 +272,13 @@ export default function Navbar({ navClass, logolight, menuClass }) {
                   Residential
                 </Link>
               </li>
+              {currentUser && (
+                <li>
+                  <Link to="/message" className="sub-menu-item">
+                    Message
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link to="/contactus" className="sub-menu-item">
                   Contact Us

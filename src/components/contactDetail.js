@@ -5,12 +5,12 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faComment } from "@fortawesome/free-solid-svg-icons"; // Message icon
+import { toast } from "react-toastify";
 
 const ContactForm = ({ type, person, permission }) => {
   const apiUrl = process.env.REACT_APP_SERVER_URL;
   const { currentUser } = useSelector((state) => state.user);
   const [sending, setSending] = useState(false);
-  const [responseMsg, setResponseMsg] = useState("");
   const [messageSendSuccess, setMessageSendSuccess] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -21,7 +21,7 @@ const ContactForm = ({ type, person, permission }) => {
     e.preventDefault();
 
     if (!message) {
-      setResponseMsg("Please write a message before sending.");
+      toast.warning("Please write a message before sending.");
       return;
     }
     const conversationApiData = {
@@ -29,21 +29,19 @@ const ContactForm = ({ type, person, permission }) => {
       participantId: person.id,
     };
 
-
     try {
       setSending(true);
-      setResponseMsg("");
       // Create conversation
       const res = await fetch(`${apiUrl}/api/conversation/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(conversationApiData),
       });
-      const json = await res.json();
+      // const json = await res.json();
 
-      if (!res.ok) {
-        throw new Error("Failed to create conversation. Try again.");
-      }
+      // if (!res.ok) {
+      //   throw new Error("Failed to create conversation. Try again.");
+      // }
 
       // Send message
       const resMsg = await fetch(`${apiUrl}/api/message/create`, {
@@ -60,12 +58,11 @@ const ContactForm = ({ type, person, permission }) => {
       if (!resMsg.ok) {
         throw new Error("Failed to send message. Try again.");
       }
-
-      setResponseMsg("Message sent successfully!");
+      toast.success("Message sent successfully!");
       setMessageSendSuccess(true);
       setMessage("");
     } catch (error) {
-      setResponseMsg(error.message || "An error occurred. Try again.");
+      toast.error(error.message || "An error occurred. Try again.");
     } finally {
       setSending(false);
     }
@@ -116,20 +113,23 @@ const ContactForm = ({ type, person, permission }) => {
               backgroundColor: "#f8f9fa",
               fontSize: "1rem",
               color: "#495057",
+              height: "5rem",
             }}
             value={message}
             onChange={handleChange}
           />
         )}
         <div className="d-flex mt-3">
-          <button
-            type="submit"
-            className="btn btn-primary w-100 me-2 d-flex align-items-center justify-content-center fs-6"
-            disabled={sending || !message}
-          >
-            <FontAwesomeIcon icon={faComment} className="me-2" />
-            {sending ? "Sending..." : "Send"}
-          </button>
+          {type !== "Agent" && (
+            <button
+              type="submit"
+              className="btn btn-primary w-100 me-2 d-flex align-items-center justify-content-center fs-6"
+              disabled={sending || !message}
+            >
+              <FontAwesomeIcon icon={faComment} className="me-2" />
+              {sending ? "Sending..." : "Send"}
+            </button>
+          )}
           <Link
             to={`https://api.whatsapp.com/send?phone=${person.phone}&text=Hello`}
             className="btn btn-success w-100 d-flex align-items-center justify-content-center fs-6"
@@ -138,24 +138,16 @@ const ContactForm = ({ type, person, permission }) => {
             Call
           </Link>
         </div>
-        {responseMsg && (
-          <p className="mt-3 text-center text-danger">{responseMsg}</p>
-        )}
       </form>
     </div>
   );
 };
-const ContactDetail = ({
-  permission,
-  currentItem,
-  contactPerson,
-
-}) => {
+const ContactDetail = ({ permission, currentItem, contactPerson }) => {
   const ContactPerson = contactPerson
     ? {
         id: contactPerson._id,
         username: contactPerson.username,
-        email: contactPerson.email, 
+        email: contactPerson.email,
         phone: contactPerson.phone || "+65 xxxxxxx",
         photo: contactPerson.avatar.data || "",
         contentType: contactPerson.contentType || "",
@@ -171,7 +163,7 @@ const ContactDetail = ({
         avatar: "",
       };
   const agent = {
-    name: currentItem.agent_name,
+    username: currentItem.agent_name,
     phone: currentItem.agent_phone,
     photo: currentItem.agent_photo,
     contentType: "",
@@ -208,7 +200,6 @@ const ContactDetail = ({
           />
         </>
       )}
-
     </>
   );
 };
