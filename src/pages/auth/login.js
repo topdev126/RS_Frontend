@@ -9,6 +9,7 @@ import { signinFailed, signinSuccess } from "../../redux/user/userSlice.js";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 export default function AuthLogin() {
+  const apiUrl = process.env.REACT_APP_SERVER_URL;
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const pwdRef = useRef();
@@ -16,7 +17,7 @@ export default function AuthLogin() {
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      const res = await fetch("http://127.0.0.1:3002/api/auth/signin", {
+      const res = await fetch(`${apiUrl}/api/auth/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,10 +53,8 @@ export default function AuthLogin() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const { displayName, email, phoneNumber, photoURL, role } = result.user;
-      console.log("888888888888888888", result.user);
-
       //=====Fetch The Data To Backend====//
-      const res = await fetch("http://127.0.0.1:3002/api/auth/google", {
+      const res = await fetch(`${apiUrl}/api/auth/google`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

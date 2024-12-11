@@ -75,7 +75,6 @@ export default function PropertyDetailsTwo() {
         }));
       })
       .then(({status, data}) => {
-        console.log("0000000000000----", data);
         if (status === 202) {
           setContactPerson(data.salesPerson);
         } else if (status === 201) {

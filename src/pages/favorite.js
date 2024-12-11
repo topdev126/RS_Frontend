@@ -50,7 +50,6 @@ export default function HomePage() {
         return { db_index: 0 };
     }
   })();
-  console.log("88888", propertyData);
   const removeFavorite = async (id) => {
     const payload = {
       list_id: id,

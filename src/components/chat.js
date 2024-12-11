@@ -71,7 +71,6 @@ const Chat = ({ conversationInfo }) => {
 
   //====== Send Message To Socket ========//
   const sendMessageTOSocket = () => {
-    console.log("00000000", typedMessage, trackConversation.chatId, currentUser._id, trackConversation.conversationActive);
 
     socket.emit("send_message", {
       chatId: trackConversation.chatId,
@@ -123,7 +122,6 @@ const Chat = ({ conversationInfo }) => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [socketMessages, messageText]);
 
-  console.log("^^^^^^^^", socketMessages, messageText);
 
   const handleConversationDelete = async () => {
     try {

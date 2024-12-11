@@ -31,7 +31,6 @@ export default function PropertyTwo() {
   if (loading) {
     return <div>Loading...</div>;
   }
-  console.log("==> ", propertyData);
   return (
     <>
       <div className="row justify-content-center">

@@ -110,7 +110,6 @@ export default function AdminPage() {
         console.log("Error fetching data:", error);
       });
   };
-  console.log("sssssssss", dbSalesPersons);
   const getSalePerson = async () => {
     try {
       const response = await fetch(`${apiUrl}/api/admin/getSalesPerson`, {

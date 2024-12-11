@@ -10,7 +10,8 @@ import { signal } from "@preact/signals-react";
 
 //production
 // const Node_Env = "local"
-export const socket = io("https://thunder-scarlet-wizard.glitch.me/", {
+const apiUrl = process.env.REACT_APP_SERVER_URL;
+export const socket = io(`${apiUrl}`, {
   headers: {
     "user-agent": "chrome",
   },
@@ -23,7 +24,6 @@ export const notifySignal = signal({
 const SocketConnection = () => {
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const apiUrl = process.env.REACT_APP_SERVER_URL;
 
   //======== Get Notification From DB =========//
   useEffect(() => {
@@ -70,7 +70,6 @@ const SocketConnection = () => {
   //----- Get Notification from socket and setNotification---------//
   useEffect(() => {
     socket.on(`${currentUser?._id}`, (socketNotification) => {
-      console.log("!!!!!!!!!!!!!!!!!!");
       const currentPath = window.location.pathname;
 
       if (currentPath !== "/message") {

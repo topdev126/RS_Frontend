@@ -191,7 +191,6 @@ const SearchPan = ({
     resetSearchParams();
   }, [db_index]);
 
-  console.log("======", selectedDistrict);
 
   return (
     <div className="mt-4">

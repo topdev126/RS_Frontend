@@ -28,7 +28,6 @@ const Message = () => {
       activeChatId.value.chatId = "";
     }
   }, []);
-  console.log("=============0000", currentUser);
 
   // Load Current user Conversations
   useEffect(() => {
@@ -63,7 +62,6 @@ const Message = () => {
     })();
   }, []);
 
-  console.log("sssssss", conversations);
 
   return (
     <>

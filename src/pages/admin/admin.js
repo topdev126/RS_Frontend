@@ -57,7 +57,6 @@ export default function AdminPage() {
       setLoading3(true); // Start loading indicator
     else if (dbName == "resi_sale") setLoading4(true); // Start loading indicator
     setMessage(""); // Clear previous messages
-    console.log("======");
 
     try {
       const response = await fetch(`${apiUrl}/api/admin/upload_${dbName}`, {
