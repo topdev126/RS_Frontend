@@ -8,8 +8,10 @@
     "@fortawesome/free-brands-svg-icons": "^6.7.1",
     "@fortawesome/free-solid-svg-icons": "^6.7.1",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@preact/signals-react": "^2.2.0",
     "@react-google-maps/api": "^2.20.3",
     "@reduxjs/toolkit": "^2.3.0",
+    "@sweetalert/with-react": "^0.1.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -34,11 +36,13 @@
     "react-type-animation": "^3.2.0",
     "redux-persist": "^6.0.0",
     "sass": "^1.69.4",
+    "socket.io-client": "^4.8.1",
+    "sweetalert": "^2.1.2",
     "tiny-slider-react": "^0.5.7",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "set PORT=3001 && react-scripts start",
+    "start": "set PORT=5173 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

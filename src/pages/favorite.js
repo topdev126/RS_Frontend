@@ -50,14 +50,14 @@ export default function HomePage() {
         return { db_index: 0 };
     }
   })();
-
-  const setFavorite = async (id) => {
+  console.log("88888", propertyData);
+  const removeFavorite = async (id) => {
     const payload = {
       list_id: id,
       user_id: currentUser._id,
       cate: db_index,
     };
-    fetch(`${apiUrl}/api/admin/searchFavorite`, {
+    fetch(`${apiUrl}/api/admin/deleteFavorite`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -69,6 +69,8 @@ export default function HomePage() {
       .catch((error) => {
         toast.error(error.message);
       });
+
+      setPropertyData(propertyData.filter(item => item._id !== id))
   };
   const handleSearch = (e) => {
     if (e) {
@@ -228,8 +230,8 @@ export default function HomePage() {
                           <>
                             <li className="mt-1">
                               <label
-                                onClick={() => setFavorite(item._id)}
-                                className="btn btn-sm btn-icon btn-pills btn-primary"
+                                onClick={() => removeFavorite(item._id)}
+                                className="btn btn-sm btn-icon btn-pills btn-danger"
                               >
                                 <FaRegHeart className="icons" />
                               </label>

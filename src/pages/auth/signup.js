@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import bg3 from "../../assect/images/bg/03.jpg";
 import logo from "../../assect/images/logo-icon-80.png";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Signup() {
+  const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_SERVER_URL;
   const [loading, setLoading] = useState(false);
   const {
@@ -33,10 +36,13 @@ export default function Signup() {
     // Handle response data (e.g., show message or redirect)
     if (data.success) {
       console.log("Signup successful", data);
+      toast.success("Successfully SignUp");
+      navigate("/login");
       setShowAlert(false);
       // Redirect or show success message
     } else {
       console.log("Signup failed", data);
+      toast.error("Failed SignUp");
       setShowAlert(true);
 
       // Handle failure (e.g., show error message)
@@ -77,7 +83,7 @@ export default function Signup() {
                       id="floatingInput"
                       placeholder="Harry"
                     />
-                    <label htmlFor="floatingInput">First Name</label>
+                    <label htmlFor="floatingInput">UserName</label>
                     {errors.username && (
                       <span className="text-danger">
                         {errors.username.message}
@@ -100,7 +106,21 @@ export default function Signup() {
                       </span>
                     )}
                   </div>
-
+                  <div className="form-floating mb-2">
+                    <input
+                      {...register("phone", { required: "Phone is required" })}
+                      type="phone"
+                      className="form-control"
+                      id="floatingPhone"
+                      placeholder="name@example.com"
+                    />
+                    <label htmlFor="floatingPhone">Phone Number</label>
+                    {errors.phone && (
+                      <span className="text-danger">
+                        {errors.phone.message}
+                      </span>
+                    )}
+                  </div>
                   <div className="form-floating mb-3">
                     <input
                       {...register("password", {

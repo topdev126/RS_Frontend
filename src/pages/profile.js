@@ -3,54 +3,71 @@ import { useSelector } from "react-redux";
 import bg3 from "../assect/images/bg/03.jpg";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
-import Table from "react-bootstrap/Table";
-import Form from "react-bootstrap/Form";
+import { HandleLogOut } from "../components/handleLogout.js";
+// import Table from "react-bootstrap/Table";
+// import Form from "react-bootstrap/Form";
+import { Table, Form, Button } from "react-bootstrap";
+
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { userUpdateSuccess } from "../redux/user/userSlice.js";
+import { userUpdateSuccess, signinFailed } from "../redux/user/userSlice.js";
+import { FaTrash } from "react-icons/fa";
+import swal from "@sweetalert/with-react";
+import Select from "react-select";
 
 export default function AdminPage() {
   const apiUrl = process.env.REACT_APP_SERVER_URL;
 
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-
   const [activeSection, setActiveSection] = useState("profile");
   const [loading1, setLoading1] = useState(false); // Track loading state
   const [loading2, setLoading2] = useState(false); // Track loading state
   const [loading3, setLoading3] = useState(false); // Track loading state
   const [loading4, setLoading4] = useState(false); // Track loading state
   const [message, setMessage] = useState(""); // Feedback message for the user
+  const [salesPersons, setSalesPersons] = useState([]);
+  const [dbSalesPersons, setDbSalesPersons] = useState([]);
 
   const [users, setUsers] = useState([]);
 
   const [fullName, setFullName] = useState(currentUser.username);
   const [email, setEmail] = useState(currentUser.email);
+  const [phone, setPhone] = useState(currentUser.phone);
   const [pwd, setPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
 
   const [selectedImage, setSelectedImage] = useState(null); // State to hold the loaded image
-
+  const token = localStorage.getItem("access_token");
   const handleFileChange = async (event) => {
     try {
       const formData = new FormData();
       formData.append("image", event.target.files[0]);
       formData.append("id", currentUser._id);
-      const response = await fetch(`${apiUrl}/upload`, {
+      const response = await fetch(`${apiUrl}/api/users/avatarUpload`, {
         // Replace with your server endpoint
         method: "POST",
         body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`, // Send token in Authorization header
+          // "Content-Type": "application/json",
+        },
       });
-      const data = await response.json();
-      const updatedUser = {
-        ...currentUser,
-        avatar: data.buffer,
-        contentType: data.type,
-      };
 
-      dispatch(userUpdateSuccess(updatedUser));
-      toast.success(data.message);
+      const data = await response.json();
+      if (response.ok === false) {
+        toast.error(data.message);
+        HandleLogOut(dispatch);
+      } else {
+        const updatedUser = {
+          ...currentUser,
+          avatar: data.buffer,
+          contentType: data.type,
+        };
+        dispatch(userUpdateSuccess(updatedUser));
+        toast.success(data.message);
+      }
     } catch (error) {
       toast.error(error.message);
     }
@@ -71,26 +88,55 @@ export default function AdminPage() {
 
     fetch(`${apiUrl}/api/users`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        Authorization: `Bearer ${token}`, // Send token in Authorization header
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(payload),
     })
       .then((response) => {
         if (!response.ok) {
-          toast.error(`HTTP error! status: ${response.status}`);
+          // toast.error(`HTTP error! status: ${response.status}`);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.json();
       })
-      .then((users) => {
-        setUsers(users);
+      .then((data) => {
+        setUsers(data.users);
+        setSalesPersons(data.users.filter((user) => user.role === 2));
       })
       .catch((error) => {
         toast.error(error);
         console.log("Error fetching data:", error);
       });
   };
+  console.log("sssssssss", dbSalesPersons);
+  const getSalePerson = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/api/admin/getSalesPerson`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          // Add an Authorization token if required
+          // 'Authorization': 'Bearer your-token-here'
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json(); // Assuming the API returns JSON
+      setDbSalesPersons(data);
+      console.log("Sales Persons:", salesPersons);
+    } catch (error) {
+      console.error("Error fetching sales persons:", error);
+      return [];
+    }
+  };
   useEffect(() => {
     getAllUser();
+    getSalePerson();
   }, []);
   const profileSave = (e) => {
     e.preventDefault();
@@ -102,7 +148,10 @@ export default function AdminPage() {
 
     fetch(`${apiUrl}/api/admin/profileSave`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        Authorization: `Bearer ${token}`, // Send token in Authorization header
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(payload),
     })
       .then((response) => response.json())
@@ -187,139 +236,264 @@ export default function AdminPage() {
       else if (dbName == "resi_sale") setLoading4(false); // Start loading indicator
     }
   };
+  const removeUser = async (id) => {
+    fetch(`${apiUrl}/api/users/delete/${id}`, {
+      method: "DELETE", // Specify the HTTP method
+      headers: {
+        Authorization: `Bearer ${token}`, // Send token in Authorization header
+        "Content-Type": "application/json",
+      },
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Failed to delete user.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Update state to remove the deleted user
+        setUsers(users.filter((item) => item._id !== id));
+        toast.success(data); // Assuming the server sends a success message
+      })
+      .catch((error) => {
+        // Display an error toast
+        toast.error(
+          error.message || "An error occurred while deleting the user."
+        );
+      });
+  };
+  const handleRemoveUser = (userId) => {
+    swal({
+      content: (
+        <div>
+          <h2>Are you sure?</h2>
+          <p>
+            Do you really want to remove this user? This action{" "}
+            <strong>cannot</strong> be undone.
+          </p>
+        </div>
+      ),
+      buttons: {
+        cancel: {
+          text: "No, cancel!",
+          value: null,
+          visible: true,
+          className: "swal-button--cancel",
+        },
+        confirm: {
+          text: "Yes, remove it!",
+          value: true,
+          visible: true,
+          className: "swal-button--confirm",
+        },
+      },
+      icon: "warning",
+    }).then((willDelete) => {
+      if (willDelete) {
+        removeUser(userId);
+        swal("Removed!", "The user has been successfully removed.", "success");
+      }
+    });
+  };
+  const items = [
+    { id: 0, label: "Commercial Rent" },
+    { id: 1, label: "Commercial Sale" },
+    { id: 2, label: "Residential Rent" },
+    { id: 3, label: "Residential Sale" },
+  ];
+
+  const salesHandleChange = (selectedOption, dbInd) => {
+    const payload = {
+      dbIndex: dbInd,
+      userID: salesPersons[selectedOption.value]._id,
+      userName: salesPersons[selectedOption.value].username,
+    };
+
+    fetch(`${apiUrl}/api/admin/changeSalesPerson`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json())
+      .then((data) => {})
+      .catch((error) => {});
+  };
   // Function to render content based on the active section
   const renderContent = () => {
     switch (activeSection) {
       case "users":
         return (
-          <div>
-            <div className="row">
-              <div className="col-6">
-                <Form.Control
+          <div className="container">
+            {/* Search Input */}
+            <div className="row mb-4">
+              <div className="col-md-6">
+                <input
                   type="text"
                   placeholder="Search by User Name"
-                  className="me-2"
+                  className="form-control shadow-sm"
                   onChange={getAllUser}
                 />
               </div>
             </div>
-            <Form id="userRole">
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>Email</th>
-                    <th>Created Date</th>
-                    <th>Role</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((user) => (
-                    <tr key={user._id}>
-                      <td>{user.email}</td> <td>{user.createdAt}</td>{" "}
-                      <td>
-                        <Form.Select
-                          id={user._id}
-                          defaultValue={user.role}
-                          onChange={(event) => roleChange(user._id, event)}
-                        >
-                          <option value={-1}>No Permission</option>
-                          <option value={0}>Client</option>
-                          <option value={2}>Agency</option>
-                          <option value={5}>Admin</option>
-                        </Form.Select>
-                      </td>{" "}
+
+            {/* User Role Management Table */}
+            <form id="userRole">
+              <div className="table-responsive shadow-lg rounded px-1 py-1">
+                <table className="table table-striped table-hover align-middle">
+                  <thead className="bg-primary text-white">
+                    <tr>
+                      <th>Email</th>
+                      <th>Created Date</th>
+                      <th>Role</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Form>
+                  </thead>
+                  <tbody>
+                    {users.map((user) => (
+                      <tr key={user._id}>
+                        <td>{user.email}</td>
+                        <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            {/* Role Selector */}
+                            <select
+                              id={user._id}
+                              defaultValue={user.role}
+                              onChange={(event) => roleChange(user._id, event)}
+                              className="form-select shadow-sm me-2"
+                            >
+                              <option value={-1}>No Permission</option>
+                              <option value={0}>Client</option>
+                              <option value={2}>Salesperson</option>
+                              <option value={5}>Admin</option>
+                            </select>
+                            {/* Remove Button */}
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm shadow-sm"
+                              onClick={() => handleRemoveUser(user._id)}
+                              title="Remove User"
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </form>
           </div>
         );
       case "profile":
         return (
           <div className="row justify-content-center">
-            <div className="col-lg-6">
-              <div className="p-4 rounded-3 shadow">
-                <div className="row">
-                  <div className="col-md-12" style={{ textAlign: "center" }}>
-                    <label onClick={handleUpload} style={{ cursor: "pointer" }}>
-                      Edit Avatar
-                    </label>
-                    <input
-                      id="fileInput"
-                      type="file"
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      onChange={handleFileChange}
-                    />
-                  </div>
-                  <div className="col-md-12" style={{ textAlign: "center" }}>
-                    <img
-                      style={{ height: "150px", width: "150px" }} // Explicit size
-                      // src={user.avatar.data}
-                      // src={`data:${currentUser.contentType};base64,${btoa(
-                      //   String.fromCharCode(
-                      //     ...new Uint8Array(currentUser.avatar.data)
-                      //   )
-                      src={`data:${currentUser.contentType};base64,${btoa(
-                        new Uint8Array(currentUser.avatar.data).reduce((data, byte) => data + String.fromCharCode(byte), "")
-                      )}`}
-                      alt="profile image"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-6">
-              <div className="p-4 rounded-3 shadow">
-                <form onSubmit={profileSave}>
-                  <div className="row">
-                    <div className="col-md-12">
-                      <div className="mb-3">
-                        <label className="form-label">Your Name</label>
+            <div className="col-lg-10">
+              <div className="card shadow-lg border-0 rounded-3">
+                <div className="card-body p-4">
+                  <h3 className="text-center mb-4 fw-bold text-primary">
+                    Update Profile
+                  </h3>
+                  <form onSubmit={profileSave}>
+                    {/* Name and Email */}
+                    <div className="row g-3 mb-3">
+                      <div className="col-md-6">
+                        <label
+                          htmlFor="name"
+                          className="form-label fw-semibold"
+                        >
+                          Your Name
+                        </label>
                         <input
                           name="name"
                           id="name"
                           type="text"
-                          className="form-control"
-                          placeholder="Name :"
+                          className="form-control shadow-sm"
+                          placeholder="Enter your name"
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
                         />
                       </div>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-12">
-                      <div className="mb-3">
-                        <label className="form-label">Your Email</label>
+                      <div className="col-md-6">
+                        <label
+                          htmlFor="email"
+                          className="form-label fw-semibold"
+                        >
+                          Your Email
+                        </label>
                         <input
                           name="email"
                           id="email"
                           type="email"
-                          className="form-control"
-                          placeholder="Email :"
+                          className="form-control shadow-sm"
+                          placeholder="Enter your email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                         />
                       </div>
                     </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12">
-                      <div className="d-grid">
-                        <button
-                          type="submit"
-                          id="submit"
-                          name="send"
-                          className="btn btn-primary"
+
+                    {/* Phone and Avatar */}
+                    <div className="row g-3 align-items-center mb-4">
+                      <div className="col-md-6">
+                        <label
+                          htmlFor="phone"
+                          className="form-label fw-semibold"
                         >
-                          Change
-                        </button>
+                          Your Phone
+                        </label>
+                        <input
+                          name="phone"
+                          id="phone"
+                          type="tel"
+                          className="form-control shadow-sm"
+                          placeholder="Enter your phone number"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                        />
+                      </div>
+                      <div className="col-md-6 text-center">
+                        <label
+                          onClick={handleUpload}
+                          className="d-block mb-3 text-primary fw-bold cursor-pointer"
+                        >
+                          Edit Avatar
+                        </label>
+                        <input
+                          id="fileInput"
+                          type="file"
+                          accept="image/*"
+                          className="d-none"
+                          onChange={handleFileChange}
+                        />
+                        <img
+                          className="rounded-circle border shadow-sm"
+                          style={{ height: "100px", width: "100px" }}
+                          src={`data:${currentUser.contentType};base64,${btoa(
+                            new Uint8Array(currentUser.avatar.data).reduce(
+                              (data, byte) => data + String.fromCharCode(byte),
+                              ""
+                            )
+                          )}`}
+                          alt="Profile Avatar"
+                        />
                       </div>
                     </div>
-                  </div>
-                </form>
+
+                    {/* Submit Button */}
+                    <div className="d-grid">
+                      <button
+                        type="submit"
+                        id="submit"
+                        name="send"
+                        className="btn btn-primary btn-lg shadow-sm"
+                      >
+                        Save Changes
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
@@ -327,57 +501,76 @@ export default function AdminPage() {
       case "reset":
         return (
           <div className="row justify-content-center">
-            <div className="col-lg-8">
-              <div className="p-4 rounded-3 shadow">
-                <form submit={pwdChange}>
-                  <div className="row">
-                    <div className="col-md-12">
-                      <div className="mb-3">
-                        <label className="form-label">Old Password</label>
-                        <input
-                          name="password"
-                          id="password"
-                          type="password"
-                          className="form-control"
-                          onChange={(e) => setPwd(e.target.value)}
-                        />
-                      </div>
-                    </div>
+            <div className="col-lg-10">
+              <div className="p-4 rounded-3 shadow-lg border-0">
+                <h3 className="text-center mb-4 fw-bold text-primary">
+                  Change Password
+                </h3>
+                <form onSubmit={pwdChange}>
+                  {/* Old Password */}
+                  <div className="mb-3">
+                    <label
+                      htmlFor="password"
+                      className="form-label fw-semibold"
+                    >
+                      Old Password
+                    </label>
+                    <input
+                      name="password"
+                      id="password"
+                      type="password"
+                      className="form-control shadow-sm"
+                      placeholder="Enter old password"
+                      onChange={(e) => setPwd(e.target.value)}
+                    />
+                  </div>
 
-                    <div className="col-12">
-                      <div className="mb-3">
-                        <label className="form-label">New Password</label>
-                        <input
-                          type="password"
-                          name="new password"
-                          id="new password"
-                          className="form-control"
-                          onChange={(e) => setNewPwd(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-12">
-                      <div className="mb-3">
-                        <label className="form-label">Confirm Password</label>
-                        <input
-                          type="password"
-                          name="confirm password"
-                          id="confirm password"
-                          className="form-control"
-                          onChange={(e) => setConfirmPwd(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="d-grid">
-                      <button
-                        type="submit"
-                        id="submit"
-                        name="send"
-                        className="btn btn-primary"
-                      >
-                        Change
-                      </button>
-                    </div>
+                  {/* New Password */}
+                  <div className="mb-3">
+                    <label
+                      htmlFor="new-password"
+                      className="form-label fw-semibold"
+                    >
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      name="new password"
+                      id="new-password"
+                      className="form-control shadow-sm"
+                      placeholder="Enter new password"
+                      onChange={(e) => setNewPwd(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Confirm Password */}
+                  <div className="mb-4">
+                    <label
+                      htmlFor="confirm-password"
+                      className="form-label fw-semibold"
+                    >
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      name="confirm password"
+                      id="confirm-password"
+                      className="form-control shadow-sm"
+                      placeholder="Confirm new password"
+                      onChange={(e) => setConfirmPwd(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="d-grid">
+                    <button
+                      type="submit"
+                      id="submit"
+                      name="send"
+                      className="btn btn-primary btn-lg shadow-sm"
+                    >
+                      Change Password
+                    </button>
                   </div>
                 </form>
               </div>
@@ -386,38 +579,127 @@ export default function AdminPage() {
         );
       case "reload":
         return (
-          <div>
-            <button
-              onClick={() => onReload("comm_rent")}
-              className="btn btn-outline-primary btn-lg px-4 py-2 me-2"
-              disabled={loading1}
-            >
-              {loading1 ? "Reloading..." : "Reload CommRentDB"}
-            </button>
-            <button
-              onClick={() => onReload("comm_sale")}
-              className="btn btn-outline-success btn-lg px-4 py-2 me-2"
-              disabled={loading2}
-            >
-              {loading2 ? "Reloading..." : "Reload CommSaleDB"}
-            </button>
-            <button
-              onClick={() => onReload("resi_rent")}
-              className="btn btn-outline-warning btn-lg px-4 py-2 me-2"
-              disabled={loading3}
-            >
-              {loading3 ? "Reloading..." : "Reload ResiRentDB"}
-            </button>
-            <button
-              onClick={() => onReload("resi_sale")}
-              className="btn btn-outline-danger btn-lg px-4 py-2 me-2"
-              disabled={loading4}
-            >
-              {loading4 ? "Reloading..." : "Reload ResiSaleDB"}
-            </button>
-            {message && <p className="mt-3">{message}</p>}
+          <div className="container">
+            <div className="d-flex flex-wrap gap-3 justify-content-start">
+              {/* Reload CommRentDB Button */}
+              <button
+                onClick={() => onReload("comm_rent")}
+                className={`btn btn-lg px-4 py-2 shadow ${
+                  loading1 ? "btn-primary disabled" : "btn-outline-primary"
+                }`}
+                disabled={loading1}
+              >
+                {loading1 ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Reloading...
+                  </>
+                ) : (
+                  "Reload CommRentDB"
+                )}
+              </button>
+
+              {/* Reload CommSaleDB Button */}
+              <button
+                onClick={() => onReload("comm_sale")}
+                className={`btn btn-lg px-4 py-2 shadow ${
+                  loading2 ? "btn-success disabled" : "btn-outline-success"
+                }`}
+                disabled={loading2}
+              >
+                {loading2 ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Reloading...
+                  </>
+                ) : (
+                  "Reload CommSaleDB"
+                )}
+              </button>
+
+              {/* Reload ResiRentDB Button */}
+              <button
+                onClick={() => onReload("resi_rent")}
+                className={`btn btn-lg px-4 py-2 shadow ${
+                  loading3 ? "btn-warning disabled" : "btn-outline-warning"
+                }`}
+                disabled={loading3}
+              >
+                {loading3 ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Reloading...
+                  </>
+                ) : (
+                  "Reload ResiRentDB"
+                )}
+              </button>
+
+              {/* Reload ResiSaleDB Button */}
+              <button
+                onClick={() => onReload("resi_sale")}
+                className={`btn btn-lg px-4 py-2 shadow ${
+                  loading4 ? "btn-danger disabled" : "btn-outline-danger"
+                }`}
+                disabled={loading4}
+              >
+                {loading4 ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Reloading...
+                  </>
+                ) : (
+                  "Reload ResiSaleDB"
+                )}
+              </button>
+            </div>
+
+            {/* Status Message */}
+            {message && (
+              <p className="alert alert-info mt-4 shadow-sm">{message}</p>
+            )}
           </div>
         );
+      case "sales":
+        return (
+          <div className="container p-4 rounded-3 shadow">
+            <h4 className="mb-4 text-center">SalesPerson Selection</h4>
+            <div className="row g-4">
+              {items.map((item, itemInd) => (
+                <div className="col-md-6" key={item.id}>
+                  <div className="p-3 rounded-3 border">
+                    <label
+                      htmlFor={item.id}
+                      className="form-label fs-6 fw-bold"
+                    >
+                      {item.label}
+                    </label>
+                    <Select
+                      id={item.id}
+                      options={salesPersons.map((person, index) => ({
+                        value: index,
+                        label: person.username,
+                      }))}
+                      defaultValue={
+                        dbSalesPersons.length > 0
+                          ? {
+                              value: -1,
+                              label: dbSalesPersons[itemInd].userName,
+                            }
+                          : { value: -1, label: "No Selected" }
+                      }
+                      onChange={(selectedOption) =>
+                        salesHandleChange(selectedOption, item.id)
+                      }
+                      placeholder={`${item.label}`}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
       default:
         return <div>Select a section to manage</div>;
     }
@@ -466,55 +748,82 @@ export default function AdminPage() {
           <div className="row g-4">
             {/* Sidebar */}
             <div className="col-lg-3 col-md-4 col-12">
-              <div className="admin-sidebar bg-light p-4 rounded-3 shadow sticky-bar">
+              <div className="admin-sidebar bg-light p-4 rounded-3 shadow sticky-top">
+                <h5 className="mb-4 text-center fw-bold text-primary">
+                  {currentUser.role == 5
+                    ? "Admin Panel"
+                    : currentUser.role == 2
+                    ? "Sales Person Panel"
+                    : "User Panel"}
+                </h5>
                 <ul className="list-unstyled">
-                  <li>
+                  <li className="mb-2">
                     <span
                       onClick={() => setActiveSection("profile")}
-                      className={`btn text-start w-80 ${
-                        activeSection === "profile" ? "active" : ""
+                      className={`btn d-flex align-items-center justify-content-start w-100 py-2 px-3 rounded-2 ${
+                        activeSection === "profile"
+                          ? "active bg-primary text-white shadow"
+                          : "bg-white text-dark"
                       }`}
-                      style={{ width: "100%" }}
                     >
-                      <i className="mdi mdi-card-account-details-outline fs-5 me-2 "></i>
+                      <i className="mdi mdi-card-account-details-outline fs-5 me-2"></i>
                       Profile
                     </span>
                   </li>
-                  <li>
+                  <li className="mb-2">
                     <span
                       onClick={() => setActiveSection("reset")}
-                      className={`btn text-start w-80 ${
-                        activeSection === "reset" ? "active" : ""
+                      className={`btn d-flex align-items-center justify-content-start w-100 py-2 px-3 rounded-2 ${
+                        activeSection === "reset"
+                          ? "active bg-primary text-white shadow"
+                          : "bg-white text-dark"
                       }`}
-                      style={{ width: "100%" }}
                     >
-                      <i className="mdi mdi-card-account-details-outline fs-5 me-2 "></i>
-                      Rset Password
+                      <i className="mdi mdi-key-outline fs-5 me-2"></i>
+                      Reset Password
                     </span>
                   </li>
                   {currentUser.role == 5 && (
                     <>
-                      <li>
+                      <li className="mb-2">
                         <span
                           onClick={() => setActiveSection("users")}
-                          className={`btn text-start w-80 ${
-                            activeSection === "users" ? "active" : ""
+                          className={`btn d-flex align-items-center justify-content-start w-100 py-2 px-3 rounded-2 ${
+                            activeSection === "users"
+                              ? "active bg-primary text-white shadow"
+                              : "bg-white text-dark"
                           }`}
-                          style={{ width: "100%" }}
                         >
-                          <i className="mdi mdi-account-tie fs-5 me-2 "></i>
+                          <i className="mdi mdi-account-tie fs-5 me-2"></i>
                           Users Management
                         </span>
                       </li>
-                      <li>
+
+                      <li className="mb-2">
                         <span
                           onClick={() => setActiveSection("reload")}
-                          className={`btn text-start w-80 ${
-                            activeSection === "reload" ? "active" : ""
+                          className={`btn d-flex align-items-center justify-content-start w-100 py-2 px-3 rounded-2 ${
+                            activeSection === "reload"
+                              ? "active bg-primary text-white shadow"
+                              : "bg-white text-dark"
                           }`}
                         >
-                          <i className="mdi mdi-database-import fs-5 me-2 "></i>
+                          <i className="mdi mdi-database-import fs-5 me-2"></i>
                           DB Import
+                        </span>
+                      </li>
+
+                      <li>
+                        <span
+                          onClick={() => setActiveSection("sales")}
+                          className={`btn d-flex align-items-center justify-content-start w-100 py-2 px-3 rounded-2 ${
+                            activeSection === "sales"
+                              ? "active bg-primary text-white shadow"
+                              : "bg-white text-dark"
+                          }`}
+                        >
+                          <i className="mdi mdi-sale fs-5 me-2"></i>
+                          Select Salesperson
                         </span>
                       </li>
                     </>

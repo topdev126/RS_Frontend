@@ -16,7 +16,6 @@ export default function AuthLogin() {
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-
       const res = await fetch("http://127.0.0.1:3002/api/auth/signin", {
         method: "POST",
         headers: {
@@ -26,15 +25,21 @@ export default function AuthLogin() {
           userPassword: pwdRef.current.value,
           email: emailRef.current.value,
         }),
+        credentials: "include",
       });
+  
       const userData = await res.json();
+  
       if (userData.success === false) {
         dispatch(signinFailed(userData.message));
         toast.error(userData.message);
       } else {
+        // Save token to localStorage
+        localStorage.setItem('access_token', userData.token);
+  
         dispatch(signinSuccess(userData));
         navigate("/");
-        toast.success("Successfully Signin");
+        toast.success("Successfully Signed In");
       }
     } catch (error) {
       console.log(error);
@@ -46,7 +51,8 @@ export default function AuthLogin() {
       const auth = getAuth(firebaseApp);
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      const { displayName, email, photoURL, role } = result.user;
+      const { displayName, email, phoneNumber, photoURL, role } = result.user;
+      console.log("888888888888888888", result.user);
 
       //=====Fetch The Data To Backend====//
       const res = await fetch("http://127.0.0.1:3002/api/auth/google", {
@@ -57,6 +63,7 @@ export default function AuthLogin() {
         body: JSON.stringify({
           name: displayName,
           email,
+          phone: phoneNumber?phoneNumber:"",
           photo: photoURL,
           role,
         }),
@@ -66,6 +73,7 @@ export default function AuthLogin() {
         dispatch(signinFailed(userData.message));
         toast.error(userData.message);
       } else {
+        localStorage.setItem('access_token', userData.token);
         dispatch(signinSuccess(userData));
         navigate("/");
         toast.success("Successfully Signin");

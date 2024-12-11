@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { signoutFailed, signoutSuccess } from "../redux/user/userSlice";
-import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { HandleLogOut } from "./handleLogout";
 import { FaBookmark, FaSignOutAlt, FaUser } from "react-icons/fa";
 import { MdFavoriteBorder } from "react-icons/md";
 import ListGroup from "react-bootstrap/ListGroup";
@@ -10,51 +9,43 @@ import "../../src/assect/css/custom.css";
 import "react-toastify/dist/ReactToastify.css";
 
 const ProfileOption = ({ user }) => {
-  console.log("user", user);
   const dispatch = useDispatch();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const handleLogOut = async () => {
-    setIsDropdownOpen(false); // Close dropdown after action
-    try {
-      const res = await fetch("http://127.0.0.1:3002/api/auth/signout");
-      const data = await res.json();
-      if (data.success === false) {
-        dispatch(signoutFailed(data.message));
-        toast.error(data.message);
-      } else {
-        dispatch(signoutSuccess());
-        toast.success("successfully SignOut");
+  const dropdownRef = useRef(null); // Reference for the dropdown
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
       }
-    } catch (error) {
-      dispatch(signoutFailed(error.message));
-      toast.error(error.message);
-    }
-  };
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="flex-none gap-2">
+    <div className="flex-none gap-2" ref={dropdownRef}>
       <div className="dropdown dropdown-end relative">
         {/* Avatar button */}
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="btn btn-sm btn-icon btn-pills btn-primary"
         >
-          {/* <img
+          <img
             className="rounded-circle"
-            style={{ height: "3rem", width: "3rem" }} // Explicit size
-            // src={user.avatar.data}
+            style={{ height: "2.5rem", width: "2.5rem" }}
             src={`data:${user.contentType};base64,${btoa(
-              String.fromCharCode(...new Uint8Array(user.avatar.data))
+              new Uint8Array(user.avatar.data).reduce(
+                (data, byte) => data + String.fromCharCode(byte),
+                ""
+              )
             )}`}
             alt="profile image"
-          /> */}
-        <img
-          className="rounded-circle"
-          style={{ height: "3rem", width: "3rem" }}
-          src={`data:${user.contentType};base64,${btoa(
-            new Uint8Array(user.avatar.data).reduce((data, byte) => data + String.fromCharCode(byte), "")
-          )}`}
-          alt="profile image"
-        />       
+          />
         </button>
 
         {/* Dropdown menu */}
@@ -67,7 +58,7 @@ const ProfileOption = ({ user }) => {
                 className="text-gray-700 hover:text-brand-blue flex items-center"
                 style={{ color: "black" }}
               >
-                <FaUser className="mr-2" /> &nbsp;&nbsp;Profile
+                <FaUser className="mr-2" /> &nbsp;&nbsp;{user.username}
               </Link>
             </ListGroup.Item>
             <ListGroup.Item className="fs-6">
@@ -83,7 +74,10 @@ const ProfileOption = ({ user }) => {
             </ListGroup.Item>
             <ListGroup.Item className="fs-6">
               <Link
-                onClick={handleLogOut}
+                onClick={() => {
+                  setIsDropdownOpen(false); // Close dropdown after action
+                  HandleLogOut(dispatch);
+                }}
                 className="text-gray-700 hover:text-red-500 flex items-center"
                 style={{ color: "black" }}
               >

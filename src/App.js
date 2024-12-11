@@ -7,6 +7,7 @@ import IndexTwo from "./pages/home";
 import AdminSidebar from "./pages/admin/admin";
 import PropertyDetailsTwo from "./pages/property-detail";
 import AboutUs from "./pages/aboutus";
+import Message from "./pages/message";
 import Pricing from "./pages/pricing";
 import Faqs from "./pages/faqs";
 import Terms from "./pages/terms";
@@ -25,10 +26,12 @@ import Error from "./pages/Special/error";
 import { ToastContainer } from "react-toastify";
 import { useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
+import SocketConnection from './components/socketConnection'
 function App() {
   const { currentUser } = useSelector((state) => state.user);
   return (
     <>
+      <SocketConnection />
       <ToastContainer
         position="top-right" // Change position: "top-left", "bottom-right", etc.
         autoClose={5000} // Auto-dismiss after 5 seconds
@@ -87,8 +90,9 @@ function App() {
           path="/favorite"
           element={currentUser ? <Favorite /> : <Navigate to="/" replace />}
         />
-        <Route path="/login" element={<AuthLogin />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path="/message" element={currentUser ? <Message /> : <Navigate to="/" replace />} />
+        <Route path="/login" element={currentUser ? <Navigate to="/" replace />: <AuthLogin />} /> 
+        <Route path="/signup" element={currentUser ? <Navigate to="/" replace />: <Signup />} /> 
         <Route path="/auth-reset-password" element={<ResetPassword />} />
         <Route path="/comingsoon" element={<Comingsoon />} />
         <Route path="/maintenance" element={<Maintenance />} />

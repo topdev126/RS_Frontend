@@ -2,16 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "../components/navbar";
 import ProprtySlider from "../components/propertySlider";
+import ContactDetail from "../components/contactDetail";
 import TinySlider from "tiny-slider-react";
 import "../../node_modules/tiny-slider/dist/tiny-slider.css";
 import Footer from "../components/footer";
 import { useSelector } from "react-redux";
 import Nav from "react-bootstrap/Nav";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
-import { faComment } from "@fortawesome/free-solid-svg-icons"; // Message icon
 import { Districts_Arr as districts } from "../components/districts";
-import RealEstateMap from "./myMap"
+import RealEstateMap from "./myMap";
 export default function PropertyDetailsTwo() {
   const labels = [
     "Commercial | Rent",
@@ -19,10 +17,12 @@ export default function PropertyDetailsTwo() {
     "Residential | Rent",
     "Residential | Sale",
   ];
-  const whatsApp_text = "hi nice to meet you";
+
   const [loading, setLoading] = useState(false);
   const [currentItem, setCurrentItem] = useState(false);
+  const [contactPerson, setContactPerson] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerHeight);
+  const [permission, setPermission] = useState(0);
 
   const params = useParams();
   const id = params.id;
@@ -55,18 +55,36 @@ export default function PropertyDetailsTwo() {
     },
   };
   const relatedSearchs = useSelector((state) => state.search.relatedSearchs);
-
   const url = `${apiUrl}/api/admin/getDetail/${params.idb}/${params.id}`;
+  const token = localStorage.getItem("access_token");
   useEffect(() => {
-    fetch(url)
+    fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Send token in Authorization header
+        // "Content-Type": "application/json",
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return response.json();
+        // Extract status and parse JSON
+        return response.json().then((data) => ({
+          status: response.status,
+          data,
+        }));
       })
-      .then((propertyData) => {
-        setCurrentItem(propertyData);
+      .then(({status, data}) => {
+        console.log("0000000000000----", data);
+        if (status === 202) {
+          setContactPerson(data.salesPerson);
+        } else if (status === 201) {
+          setContactPerson(data.adminUser);
+        } else if (status === 200) {
+          setContactPerson(data.salesPerson);
+        }
+        setCurrentItem(data.detail);
+        setPermission(data.permission);
         setLoading(false);
       })
       .catch((error) => {
@@ -381,110 +399,33 @@ export default function PropertyDetailsTwo() {
                 />
                 {/* {currentItem.description} */}
               </p>
-            </div>
-            <div className="col-lg-4 sticky-column " id="contact">
-              {/* Add CSS class here */}
-              <div className="p-4 rounded-3 shadow">
-                <form>
-                  <div className="row">
-                    <div className="col-md-4">
-                      <img
-                        src={currentItem.agent_photo}
-                        alt="Agency"
-                        className="img-fluid rounded-circle mb-3"
-                        style={{ width: "100px", height: "100px" }}
-                      />
-                    </div>
-                    <div
-                      className="col-md-8"
-                      style={{ alignContent: "center" }}
-                    >
-                      <h4>
-                        <p>{currentItem.agent_name}</p>
-                      </h4>
-                      <strong>Phone:</strong> {currentItem.agent_phone}
+              <div className="container mt-60" id="related_property">
+                <div className="row justify-content-center">
+                  <div className="col">
+                    <div className="section-title text-center mb-4 pb-2">
+                      <h4 className="title mb-3">Related Properties</h4>
+                      <p className="para-desc mb-0 mx-auto fs-5">
+                        A great plateform to buy, sell and rent your properties
+                        without any agent or commisions.
+                      </p>
                     </div>
                   </div>
-                  <div className="row py-3">
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <input
-                          name="name"
-                          id="name"
-                          type="text"
-                          className="form-control"
-                          placeholder="Name :"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <input
-                          name="email"
-                          id="email"
-                          type="email"
-                          className="form-control"
-                          placeholder="Email :"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-12">
-                      <div className="mb-3">
-                        <input
-                          name="subject"
-                          id="subject"
-                          className="form-control"
-                          placeholder="Phone number :"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-12">
-                      <div className="mb-3">
-                        <textarea
-                          name="comments"
-                          id="comments"
-                          rows="4"
-                          className="form-control"
-                          placeholder="Message :"
-                        ></textarea>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="d-flex mt-3">
-                    <Link
-                      to="#"
-                      className="btn btn-primary w-100 me-2 d-flex align-items-center justify-content-center fs-5"
-                    >
-                      <FontAwesomeIcon icon={faComment} className=" m-2" />
-                      Send
-                    </Link>
-                    <Link
-                      to={`https://api.whatsapp.com/send?phone=381621877328&text=${whatsApp_text}`}
-                      className="btn btn-success w-100 d-flex align-items-center justify-content-center fs-5"
-                    >
-                      <FontAwesomeIcon icon={faWhatsapp} className="m-2" /> Call
-                    </Link>
-                  </div>
-                </form>
+                </div>
+
+                <ProprtySlider
+                  propertyData={relatedSearchs}
+                  db_index={params.idb}
+                />
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="container mt-60" id="related_property">
-          <div className="row justify-content-center">
-            <div className="col">
-              <div className="section-title text-center mb-4 pb-2">
-                <h4 className="title mb-3">Related Properties</h4>
-                <p className="para-desc mb-0 mx-auto fs-5">
-                  A great plateform to buy, sell and rent your properties
-                  without any agent or commisions.
-                </p>
-              </div>
+            <div className="col-lg-4 sticky-column top-0" id="contact">
+              <ContactDetail
+                permission={permission}
+                currentItem={currentItem}
+                contactPerson={contactPerson}
+              />
             </div>
           </div>
-
-          <ProprtySlider propertyData={relatedSearchs} db_index={params.idb} />
         </div>
       </section>
 

@@ -112,7 +112,6 @@ export default function HomePage({ param }) {
       });
   };
   const deleteList = async (id) => {
-    alert("del");
     const payload = {
       list_id: id,
       user_id: currentUser._id,
@@ -125,13 +124,13 @@ export default function HomePage({ param }) {
     })
       .then((response) => response.json())
       .then((data) => {
+        setPropertyData(propertyData.filter(item => item._id !== id))
         toast.success(data.message);
       })
       .catch((error) => {
         toast.error(error.message);
       });
   };
-  console.log("^^^^^^^", selectedSubProperties);
   const handleSearch = (e) => {
     if (e) {
       e.preventDefault();
@@ -459,7 +458,7 @@ export default function HomePage({ param }) {
                   className="badge bg-secondary"
                   style={{ padding: "12px" }}
                 >
-                  Total {totalSearched} Items found based on your search
+                  Total {totalSearched} Items found
                 </span>
               </h2>
             </div>

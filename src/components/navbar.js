@@ -4,12 +4,13 @@ import logoDark from "../assect/images/logo-dark.png";
 import logoLight from "../assect/images/logo-light.png";
 import { useSelector } from "react-redux";
 import ProfileOption from "./profleOption";
-import { FiSearch, FiUser } from "../assect/icons/vander";
+import { FiSearch, FiUser, BsMessenger } from "../assect/icons/vander";
 
 export default function Navbar({ navClass, logolight, menuClass }) {
   const [scroll, setScroll] = useState(false);
   const [isMenu, setisMenu] = useState(false);
   const [modal, setModal] = useState(false);
+  const { notificationsDB } = useSelector((state) => state.notification);
   const location = useLocation(); // Hook to detect URL changes
 
   const { currentUser } = useSelector((state) => state.user);
@@ -209,6 +210,27 @@ export default function Navbar({ navClass, logolight, menuClass }) {
           </div>
 
           <ul className="buy-button list-inline mb-0">
+            {currentUser && (
+              <li className="list-inline-item ps-1 mb-0">
+                <Link to="/message" className="text-decoration-none">
+                  <span className="relative">
+                    <BsMessenger
+                      className="z-10 text-primary"
+                      style={{ fontSize: "2rem" }}
+                    />
+                    {notificationsDB.length === 0 ? (
+                      <span className="absolute top-0 start-100 translate-middle badge rounded-pill bg-success text-white small">
+                        New
+                      </span>
+                    ) : (
+                      <span className="absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white small">
+                        {notificationsDB.length}
+                      </span>
+                    )}
+                  </span>
+                </Link>
+              </li>
+            )}
             <li className="list-inline-item ps-1 mb-0">
               {currentUser ? (
                 <ProfileOption user={currentUser} />
