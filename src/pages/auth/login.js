@@ -26,7 +26,7 @@ export default function AuthLogin() {
           userPassword: pwdRef.current.value,
           email: emailRef.current.value,
         }),
-        credentials: "include",
+        // credentials: "include",
       });
   
       const userData = await res.json();
