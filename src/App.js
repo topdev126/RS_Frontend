@@ -6,6 +6,7 @@ import ScrollTop from "./components/scrollTop";
 import IndexTwo from "./pages/home";
 import AdminSidebar from "./pages/admin/admin";
 import PropertyDetailsTwo from "./pages/property-detail";
+import PropertyDetailsAdmin from "./pages/property-detail-salesMan";
 import AboutUs from "./pages/aboutus";
 import Message from "./pages/message";
 import Pricing from "./pages/pricing";
@@ -72,7 +73,12 @@ function App() {
           }
         />
         <Route path="/detail" element={<PropertyDetailsTwo />} />
-        <Route path="/detail/:idb/:id" element={<PropertyDetailsTwo />} />
+        <Route
+          path="/detail/:idb/:id"
+          element={currentUser ? <PropertyDetailsTwo /> : <Navigate to="/login" replace />}
+        />   
+        <Route path="/detail-admin" element={currentUser && currentUser.role>1 ? <PropertyDetailsAdmin /> : <Navigate to="/" replace />}/>
+        <Route path="/detail-admin/:idb/:id" element={currentUser&&currentUser.role>1 ? <PropertyDetailsAdmin /> : <Navigate to="/" replace />} />        
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/faqs" element={<Faqs />} />

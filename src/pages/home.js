@@ -6,6 +6,7 @@ import Navbar from "../components/navbar";
 import SearchPan from "../components/searchPan";
 import AboutUs from "../components/about";
 import Broker from "../components/broker";
+import { handleRemoveElement, setFavorite } from "../components/helper.js"
 import ClientTwo from "../components/clientTwo";
 import Blog from "../components/blog";
 import FooterTopImage from "../components/FoterTopImage";
@@ -20,6 +21,7 @@ import { FaRegHeart } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+
 
 export default function HomePage({ param }) {
   const { currentUser } = useSelector((state) => state.user);
@@ -92,25 +94,7 @@ export default function HomePage({ param }) {
     const shuffled = [...array].sort(() => 0.5 - Math.random()); // Shuffle the array
     return shuffled.slice(0, count); // Get the first 'count' elements
   };
-  const setFavorite = async (id) => {
-    const payload = {
-      list_id: id,
-      user_id: currentUser._id,
-      cate: db_index,
-    };
-    fetch(`${apiUrl}/api/admin/setFavorite`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        toast.success(data.message);
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
-  };
+
   const deleteList = async (id) => {
     const payload = {
       list_id: id,
@@ -485,7 +469,7 @@ export default function HomePage({ param }) {
                           <>
                             <li className="mt-1">
                               <label
-                                onClick={() => setFavorite(item._id)}
+                                onClick={() => setFavorite(item._id, currentUser._id, db_index)}
                                 className="btn btn-sm btn-icon btn-pills btn-primary"
                               >
                                 <FaRegHeart className="icons" />
@@ -493,11 +477,11 @@ export default function HomePage({ param }) {
                             </li>
                           </>
                         )}
-                        {currentUser && currentUser.role == 5 && (
+                        {currentUser && currentUser.role > 0 && (
                           <>
                             <li className="mt-1">
                               <label
-                                onClick={() => deleteList(item._id)}
+                                onClick={() => handleRemoveElement(item._id, deleteList, "Post")}
                                 className="btn btn-sm btn-icon btn-pills btn-primary"
                               >
                                 <MdDelete className="icons" />
@@ -510,7 +494,7 @@ export default function HomePage({ param }) {
                     <div className="card-body content p-3">
                       <Link
                         // to={item.link}
-                        to={`/detail/${db_index}/${item._id}`}
+                        to={ currentUser && (currentUser.role >1 )? `/detail-admin/${db_index}/${item._id}`:`/detail/${db_index}/${item._id}`}
                         target="_blank"
                         className="title fs-4 text-dark fw-medium "
                       >

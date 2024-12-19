@@ -4,15 +4,11 @@ import bg3 from "../assect/images/bg/03.jpg";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import { HandleLogOut } from "../components/handleLogout.js";
-// import Table from "react-bootstrap/Table";
-// import Form from "react-bootstrap/Form";
-import { Table, Form, Button } from "react-bootstrap";
-
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { userUpdateSuccess, signinFailed } from "../redux/user/userSlice.js";
+import { handleRemoveElement } from "../components/helper.js"
 import { FaTrash } from "react-icons/fa";
-import swal from "@sweetalert/with-react";
 import Select from "react-select";
 
 export default function AdminPage() {
@@ -262,39 +258,7 @@ export default function AdminPage() {
         );
       });
   };
-  const handleRemoveUser = (userId) => {
-    swal({
-      content: (
-        <div>
-          <h2>Are you sure?</h2>
-          <p>
-            Do you really want to remove this user? This action{" "}
-            <strong>cannot</strong> be undone.
-          </p>
-        </div>
-      ),
-      buttons: {
-        cancel: {
-          text: "No, cancel!",
-          value: null,
-          visible: true,
-          className: "swal-button--cancel",
-        },
-        confirm: {
-          text: "Yes, remove it!",
-          value: true,
-          visible: true,
-          className: "swal-button--confirm",
-        },
-      },
-      icon: "warning",
-    }).then((willDelete) => {
-      if (willDelete) {
-        removeUser(userId);
-        swal("Removed!", "The user has been successfully removed.", "success");
-      }
-    });
-  };
+
   const items = [
     { id: 0, label: "Commercial Rent" },
     { id: 1, label: "Commercial Sale" },
@@ -370,7 +334,7 @@ export default function AdminPage() {
                             <button
                               type="button"
                               className="btn btn-danger btn-sm shadow-sm"
-                              onClick={() => handleRemoveUser(user._id)}
+                              onClick={() => handleRemoveElement(user._id, removeUser, "User")}
                               title="Remove User"
                             >
                               <FaTrash />

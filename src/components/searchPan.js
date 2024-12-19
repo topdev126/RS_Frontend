@@ -5,7 +5,7 @@ import { Amenities } from "./amenities.js";
 import { MrtGroups } from "./mrts.js";
 import TextSearch from "./textSearch.js";
 import SearchSubProps from "./searchSubProps.js";
-import SearchSelect from "./searchSelect.js";
+import { SearchSelect } from "./searchSelect.js";
 import { Districts } from "./districts";
 import Spinner from "react-bootstrap/Spinner";
 import { MultiSelect } from "react-multi-select-component";
