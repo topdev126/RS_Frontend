@@ -6,7 +6,7 @@ import Navbar from "../components/navbar";
 import SearchPan from "../components/searchPan";
 import AboutUs from "../components/about";
 import Broker from "../components/broker";
-import { handleRemoveElement, setFavorite } from "../components/helper.js"
+import { handleRemoveElement, setFavorite } from "../components/helper.js";
 import ClientTwo from "../components/clientTwo";
 import Blog from "../components/blog";
 import FooterTopImage from "../components/FoterTopImage";
@@ -20,8 +20,8 @@ import { getRelatedSearch } from "../redux/search/searchSlice.js";
 import { FaRegHeart } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { useSelector } from "react-redux";
+import Spinner from "react-bootstrap/Spinner";
 import { toast } from "react-toastify";
-
 
 export default function HomePage({ param }) {
   const { currentUser } = useSelector((state) => state.user);
@@ -108,7 +108,7 @@ export default function HomePage({ param }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        setPropertyData(propertyData.filter(item => item._id !== id))
+        setPropertyData(propertyData.filter((item) => item._id !== id));
         toast.success(data.message);
       })
       .catch((error) => {
@@ -126,18 +126,18 @@ export default function HomePage({ param }) {
       nameKeys: nameKeys,
       minPrice: minPrice,
       maxPrice: maxPrice,
-      district: selectedDistrict.map(element => element.value),
+      district: selectedDistrict.map((element) => element.value),
       minAreaVal: minAreaVal,
       maxAreaVal: maxAreaVal,
-      BedsNums: selectedBeds.map(element => element.value),
-      BathsNums: selectedBaths.map(element => element.value),
+      BedsNums: selectedBeds.map((element) => element.value),
+      BathsNums: selectedBaths.map((element) => element.value),
       tenureKeys: tenureKeys,
       addressKeys: addressKeys,
       devNameKeys: devNameKeys,
-      selectedSubMrts: selectedMrt.map(element => element.value),
-      selectedSubAmenities: selectedAmenity.map(element => element.value),
-      selectedSubProperties: selectedPropType.map(element => element.value),
-      selectedFurnishing: selectedFurnishing.map(element => element.value),
+      selectedSubMrts: selectedMrt.map((element) => element.value),
+      selectedSubAmenities: selectedAmenity.map((element) => element.value),
+      selectedSubProperties: selectedPropType.map((element) => element.value),
+      selectedFurnishing: selectedFurnishing.map((element) => element.value),
 
       currentPage: currentPage,
       itemsPerPage: itemsPerPage,
@@ -419,7 +419,7 @@ export default function HomePage({ param }) {
                   handleSearch={handleSearch}
                   setPropertyData={setPropertyData}
                   db_index={db_index}
-                  setSearchloading={setSearchloading}
+                  searchloading={searchloading}
                   setTotalSearched={setTotalSearched}
                   initAreaMinVal={initAreaMinVal}
                   initAreaMaxVal={initAreaMaxVal}
@@ -442,7 +442,17 @@ export default function HomePage({ param }) {
                   className="badge bg-secondary"
                   style={{ padding: "12px" }}
                 >
-                  Total {totalSearched} Items found
+                  {searchloading ? (
+                    <Spinner
+                      as="span"
+                      animation="grow"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    `Total ${totalSearched} Items found`
+                  )}
                 </span>
               </h2>
             </div>
@@ -469,7 +479,13 @@ export default function HomePage({ param }) {
                           <>
                             <li className="mt-1">
                               <label
-                                onClick={() => setFavorite(item._id, currentUser._id, db_index)}
+                                onClick={() =>
+                                  setFavorite(
+                                    item._id,
+                                    currentUser._id,
+                                    db_index
+                                  )
+                                }
                                 className="btn btn-sm btn-icon btn-pills btn-primary"
                               >
                                 <FaRegHeart className="icons" />
@@ -481,7 +497,13 @@ export default function HomePage({ param }) {
                           <>
                             <li className="mt-1">
                               <label
-                                onClick={() => handleRemoveElement(item._id, deleteList, "Post")}
+                                onClick={() =>
+                                  handleRemoveElement(
+                                    item._id,
+                                    deleteList,
+                                    "Post"
+                                  )
+                                }
                                 className="btn btn-sm btn-icon btn-pills btn-primary"
                               >
                                 <MdDelete className="icons" />
@@ -494,7 +516,11 @@ export default function HomePage({ param }) {
                     <div className="card-body content p-3">
                       <Link
                         // to={item.link}
-                        to={ currentUser && (currentUser.role >1 )? `/detail-admin/${db_index}/${item._id}`:`/detail/${db_index}/${item._id}`}
+                        to={
+                          currentUser && currentUser.role > 1
+                            ? `/detail-admin/${db_index}/${item._id}`
+                            : `/detail/${db_index}/${item._id}`
+                        }
                         target="_blank"
                         className="title fs-4 text-dark fw-medium "
                       >
