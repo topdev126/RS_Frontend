@@ -161,7 +161,7 @@ export default function ContactUs() {
                     Start working with Pro-2 that can provide everything
                   </p>
                   <Link to="tel:+152534-468-854" className="text-primary">
-                    +65 9029 0238
+                    +381 621877328
                   </Link>
                 </div>
               </div>

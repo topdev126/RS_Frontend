@@ -172,7 +172,7 @@ export default function Footer() {
                     <div className="d-flex mt-4">
                       <FiPhone className="fea icon-sm text-primary mt-1 me-3" />
                       <Link to="tel:+152534-468-854" className="text-foot">
-                        +65 9029 0238
+                        +381 621877328
                       </Link>
                     </div>
                   </div>
