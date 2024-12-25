@@ -184,9 +184,12 @@ export default function HomePage({ param }) {
     handleSearch();
   }, [currentPage]);
 
+  
   useEffect(() => {
     setActiveIndex_1(param.val1);
     setActiveIndex_2(param.val2);
+    fetch(`${apiUrl}/api/admin/ip`)
+    .catch((error) => console.error('Error:', error));
   }, [param]);
 
   useEffect(() => {
