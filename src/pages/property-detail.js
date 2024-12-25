@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/navbar";
 import ProprtySlider from "../components/propertySlider";
 import ContactDetail from "../components/contactDetail";
@@ -10,6 +10,9 @@ import { useSelector } from "react-redux";
 import Nav from "react-bootstrap/Nav";
 import { Districts_Arr as districts } from "../components/districts";
 import RealEstateMap from "./myMap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+
 export default function PropertyDetailsTwo() {
   const labels = [
     "Commercial | Rent",
@@ -27,6 +30,7 @@ export default function PropertyDetailsTwo() {
   const params = useParams();
   const id = params.id;
   const apiUrl = process.env.REACT_APP_SERVER_URL;
+  const navigate = useNavigate();
   const settings = {
     container: ".tiny-one-item",
     controls: true,
@@ -74,7 +78,7 @@ export default function PropertyDetailsTwo() {
           data,
         }));
       })
-      .then(({status, data}) => {
+      .then(({ status, data }) => {
         if (status === 202) {
           setContactPerson(data.salesPerson);
         } else if (status === 201) {
@@ -106,7 +110,9 @@ export default function PropertyDetailsTwo() {
       });
     }
   };
-
+  const handleBackClick = () => {
+    navigate("/");
+  };
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -141,8 +147,26 @@ export default function PropertyDetailsTwo() {
                   )}
                 </TinySlider>
               </div>
-              <div className="title-heading text-center">
+              <div className="container mt-5 title-heading text-center position-relative">
                 <h5 className="heading fw-semibold mb-0 sub-heading title-dark py-4">
+                  <button
+                    className="btn btn-light fs-5 text-dark d-flex align-items-center position-absolute start-0 top-50 translate-middle-y border-0 rounded-3 shadow-sm"
+                    onClick={handleBackClick} // Uncomment when the function is defined
+                    style={{
+                      fontSize: "1rem",
+                      textDecoration: "none",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseOver={(e) =>
+                      (e.target.style.backgroundColor = "#f0f0f0")
+                    }
+                    onMouseOut={(e) =>
+                      (e.target.style.backgroundColor = "transparent")
+                    }
+                  >
+                    <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
+                    Back
+                  </button>
                   {currentItem.name}
                 </h5>
               </div>

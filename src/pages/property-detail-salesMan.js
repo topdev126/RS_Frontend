@@ -18,6 +18,8 @@ import { SelectOne, SearchSelect } from "../components/searchSelect";
 import { toast } from "react-toastify";
 import { handleRemoveElement, setFavorite } from "../components/helper.js";
 import { FaSwimmingPool } from "../assect/icons/vander";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 export default function PropertyDetailsTwo() {
   const labels = [
@@ -206,7 +208,7 @@ export default function PropertyDetailsTwo() {
         value: item,
         label: item,
       }))
-    );    
+    );
   };
 
   const handleSave = async () => {
@@ -225,7 +227,10 @@ export default function PropertyDetailsTwo() {
       : currentItem.bathrooms;
     currentItem.tenure = selectedTenure ? selectedTenure : currentItem.tenure;
     currentItem.mrt = selectedMrt ? selectedMrt.value : currentItem.mrt;
-    currentItem.amenities_list = selectedAmenities.length>0? selectedAmenities.map(item=>item.value) : currentItem.amenities_list;
+    currentItem.amenities_list =
+      selectedAmenities.length > 0
+        ? selectedAmenities.map((item) => item.value)
+        : currentItem.amenities_list;
 
     try {
       const response = await fetch(
@@ -279,6 +284,9 @@ export default function PropertyDetailsTwo() {
   const changeAmenity = (sel) => {
     setSelectedAmenities(sel);
   };
+  const handleBackClick = () => {
+    navigate("/");
+  };
   return (
     <>
       <Navbar
@@ -310,19 +318,42 @@ export default function PropertyDetailsTwo() {
                   )}
                 </TinySlider>
               </div>
-              <div className="container mt-5 title-heading text-center">
+              <div className="container mt-5 title-heading text-center position-relative">
                 <h5 className="heading fw-semibold mb-0 sub-heading title-dark py-4">
+                  {/* Back Button with Icon and Text */}
+                  <button
+                    className="btn btn-light fs-5 text-dark d-flex align-items-center position-absolute start-0 top-50 translate-middle-y border-0 rounded-3 shadow-sm"
+                    onClick={handleBackClick} // Uncomment when the function is defined
+                    style={{
+                      fontSize: "1rem",
+                      textDecoration: "none",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseOver={(e) =>
+                      (e.target.style.backgroundColor = "#f0f0f0")
+                    }
+                    onMouseOut={(e) =>
+                      (e.target.style.backgroundColor = "transparent")
+                    }
+                  >
+                    <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
+                    Back
+                  </button>
+
+                  {/* Title/Name Input or Display */}
                   {isEditing ? (
                     <input
                       type="text"
                       name="name"
-                      className="form-control text-center fs-4"
+                      className="form-control text-center fs-4 border-0 bg-light rounded-3 shadow-sm"
                       value={selectedName}
-                      // style={{ width: "300px", textAlign: "center" }}
                       onChange={(e) => handleInputChange(e, setSelectedName)}
+                      style={{
+                        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                      }}
                     />
                   ) : (
-                    currentItem.name
+                    <span className="fs-4">{currentItem.name}</span>
                   )}
                 </h5>
               </div>
@@ -648,64 +679,73 @@ export default function PropertyDetailsTwo() {
                       style={{ border: "1px solid #ccc", margin: "10px 0" }}
                     />
                     <div className="mb-5">
-                    {selectedAmenities ? (
-                      <div className="d-flex flex-column align-items-center mt-2">
-                        {!isEditing && <span className="fs-3 text-center mb-2">Amenities</span>}
-                        {isEditing && (
-                          <SearchSelect
-                            labelName={"Amenities"}
-                            Props={Amenities.map((item) => ({
-                              value: item,
-                              label: item,
-                            }))}
-                            selectedPropType={
-                              selectedAmenities ? selectedAmenities : ""
-                            }
-                            changeProps={changeAmenity}
-                            Icon={FaSwimmingPool}
-                            col={9}
-                          />
-                        )}
-                        <div className="d-flex flex-wrap gap-2">
-                          {selectedAmenities
-                            .map((ele) => ele.value)
-                            .map((item, index) => (
-                              <span
-                                key={index}
-                                className="badge bg-light text-dark small d-flex align-items-center"
-                                style={{ color: "#1f1f1f", marginRight: "8px" }}
-                              >
-                                {item}
-                                {isEditing && (
-                                  <button
-                                    type="button"
-                                    className="btn-close btn-close-sm ms-2 p-0"
-                                    onClick={() => handleRemoveAmenities(index)} // Ensure handleRemoveItem is implemented
-                                    aria-label="Remove"
-                                    style={{
-                                      backgroundColor: "transparent",
-                                      border: "none",
-                                      color: "#1f1f1f",
-                                      fontSize: "0.75rem", // Smaller icon size
-                                      transition: "color 0.3s",
-                                    }}
-                                    onMouseEnter={(e) =>
-                                      (e.target.style.color = "#ff6b6b")
-                                    } // Hover color change
-                                    onMouseLeave={(e) =>
-                                      (e.target.style.color = "#1f1f1f")
-                                    } // Reset color
-                                  />
-                                )}
-                              </span>
-                            ))}
+                      {selectedAmenities ? (
+                        <div className="d-flex flex-column align-items-center mt-2">
+                          {!isEditing && (
+                            <span className="fs-3 text-center mb-2">
+                              Amenities
+                            </span>
+                          )}
+                          {isEditing && (
+                            <SearchSelect
+                              labelName={"Amenities"}
+                              Props={Amenities.map((item) => ({
+                                value: item,
+                                label: item,
+                              }))}
+                              selectedPropType={
+                                selectedAmenities ? selectedAmenities : ""
+                              }
+                              changeProps={changeAmenity}
+                              Icon={FaSwimmingPool}
+                              col={9}
+                            />
+                          )}
+                          <div className="d-flex flex-wrap gap-2">
+                            {selectedAmenities
+                              .map((ele) => ele.value)
+                              .map((item, index) => (
+                                <span
+                                  key={index}
+                                  className="badge bg-light text-dark small d-flex align-items-center"
+                                  style={{
+                                    color: "#1f1f1f",
+                                    marginRight: "8px",
+                                  }}
+                                >
+                                  {item}
+                                  {isEditing && (
+                                    <button
+                                      type="button"
+                                      className="btn-close btn-close-sm ms-2 p-0"
+                                      onClick={() =>
+                                        handleRemoveAmenities(index)
+                                      } // Ensure handleRemoveItem is implemented
+                                      aria-label="Remove"
+                                      style={{
+                                        backgroundColor: "transparent",
+                                        border: "none",
+                                        color: "#1f1f1f",
+                                        fontSize: "0.75rem", // Smaller icon size
+                                        transition: "color 0.3s",
+                                      }}
+                                      onMouseEnter={(e) =>
+                                        (e.target.style.color = "#ff6b6b")
+                                      } // Hover color change
+                                      onMouseLeave={(e) =>
+                                        (e.target.style.color = "#1f1f1f")
+                                      } // Reset color
+                                    />
+                                  )}
+                                </span>
+                              ))}
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <span className="small text-muted">
-                        No amenities available
-                      </span>
-                    )}
+                      ) : (
+                        <span className="small text-muted">
+                          No amenities available
+                        </span>
+                      )}
                     </div>
 
                     <div className="d-flex justify-content-between mt-3">
