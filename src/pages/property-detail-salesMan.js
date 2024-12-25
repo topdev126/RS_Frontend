@@ -277,10 +277,8 @@ export default function PropertyDetailsTwo() {
     setSelectedAmenities(selectedAmenities.filter((_, i) => i !== index));
   };
   const changeAmenity = (sel) => {
-    console.log("*****", sel);
     setSelectedAmenities(sel);
   };
-  console.log("*****&&&&&&&&&", selectedAmenities);
   return (
     <>
       <Navbar

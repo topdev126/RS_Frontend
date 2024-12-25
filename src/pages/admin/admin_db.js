@@ -17,7 +17,6 @@ export default function Signup() {
   // Handling form submission
   const onSubmit = async (formData) => {
     setLoading(true);
-    console.log("Submitting form data:", formData);
 
     const res = await fetch(`${apiUrl}/admin/load`, {
       method: "POST",

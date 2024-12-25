@@ -37,7 +37,6 @@ const Chat = ({ conversationInfo }) => {
 
         if (getMessages.success === false) {
           setMessageLoading(false);
-          console.log(getMessages.message);
         } else {
           setMessageLoading(false);
           setSocketMessages([]);

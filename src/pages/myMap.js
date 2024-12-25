@@ -8,7 +8,6 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyCC40uAAaQ5MtL6TQOmHIAsUMlEQQDXVNo";
 const GEOCODING_API_URL = "https://maps.googleapis.com/maps/api/geocode/json";
 
 const RealEstateMap = ({ properties }) => {
-  console.log(properties);
   const [location, setLocation] = useState({ lat: 1.3521, lng: 103.8198 }); // Default to Singapore's coordinates
   const [error, setError] = useState("");
 

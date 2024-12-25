@@ -32,7 +32,6 @@ export default function AdminPage() {
         return response.json();
       })
       .then((users) => {
-        console.log(users);
         setUsers(users);
         setLoading1(false);
         setLoading2(false);

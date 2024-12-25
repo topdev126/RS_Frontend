@@ -53,7 +53,6 @@ export const setFavorite = async (id, userId, db_index) => {
     user_id: userId,
     cate: db_index,
   };
-  console.log("=============", id, userId, db_index);
   fetch(`${apiUrl}/api/admin/setFavorite`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

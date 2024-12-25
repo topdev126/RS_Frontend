@@ -123,7 +123,6 @@ export default function AdminPage() {
 
       const data = await response.json(); // Assuming the API returns JSON
       setDbSalesPersons(data);
-      console.log("Sales Persons:", salesPersons);
     } catch (error) {
       console.error("Error fetching sales persons:", error);
       return [];

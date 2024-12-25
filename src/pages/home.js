@@ -193,7 +193,7 @@ export default function HomePage({ param }) {
     if (currentPage === 1) handleSearch();
     else setCurrentPage(1);
   }, [activeIndex_1, activeIndex_2]);
-  console.log("******", propertyData);
+  
   return (
     <>
       <Navbar
