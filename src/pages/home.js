@@ -10,6 +10,9 @@ import { handleRemoveElement, setFavorite } from "../components/helper.js";
 import ClientTwo from "../components/clientTwo";
 import Blog from "../components/blog";
 import FooterTopImage from "../components/FoterTopImage";
+import { ToggleView } from "../components/toggleView.js";
+import { ListView } from "../components/listView.js";
+
 // import LoadingModal from "../components/loading";
 import CountUp from "react-countup";
 import ModalVideo from "react-modal-video";
@@ -22,6 +25,7 @@ import { MdDelete } from "react-icons/md";
 import { useSelector } from "react-redux";
 import Spinner from "react-bootstrap/Spinner";
 import { toast } from "react-toastify";
+
 
 export default function HomePage({ param }) {
   const { currentUser } = useSelector((state) => state.user);
@@ -37,7 +41,7 @@ export default function HomePage({ param }) {
   const [propertyData, setPropertyData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalSearched, setTotalSearched] = useState(0);
-
+  const [isGridView, setIsGridView] = useState(false);
   const [minPrice, setMinPrice] = useState(null);
   const [maxPrice, setMaxPrice] = useState(null);
   const [selectedPropType, setSelectedPropType] = useState([]);
@@ -61,6 +65,7 @@ export default function HomePage({ param }) {
   const [tenureKeys, setTenureKeys] = useState("");
   const [addressKeys, setAddressKeys] = useState("");
   const [nameKeys, setNameKeys] = useState("");
+  const [wordKeys, setWordKeys] = useState("");
 
   const [count, setCount] = useState([0, 0, 0, 0]);
 
@@ -123,6 +128,7 @@ export default function HomePage({ param }) {
 
     const payload = {
       db_index: db_index,
+      wordKeys: wordKeys,
       nameKeys: nameKeys,
       minPrice: minPrice,
       maxPrice: maxPrice,
@@ -187,7 +193,7 @@ export default function HomePage({ param }) {
     if (currentPage === 1) handleSearch();
     else setCurrentPage(1);
   }, [activeIndex_1, activeIndex_2]);
-
+  console.log("******", propertyData);
   return (
     <>
       <Navbar
@@ -382,6 +388,8 @@ export default function HomePage({ param }) {
                   setAddressKeys={setAddressKeys}
                   nameKeys={nameKeys}
                   setNameKeys={setNameKeys}
+                  setWordKeys={setWordKeys}
+                  wordKeys={wordKeys}
                   minPrice={minPrice}
                   setMinPrice={setMinPrice}
                   maxPrice={maxPrice}
@@ -435,6 +443,10 @@ export default function HomePage({ param }) {
         <div className="container">
           <div className="row g-4 mt-0">
             {/* <div >Searched Items: 10000</div> */}
+            <ToggleView 
+            isGridView={isGridView}
+            setIsGridView={setIsGridView}
+            />
 
             <div className="card text-center">
               <h2 className="card-title">
@@ -457,7 +469,7 @@ export default function HomePage({ param }) {
               </h2>
             </div>
 
-            {propertyData.map((item, index) => (
+            {isGridView && propertyData.map((item, index) => (
               <div className="col-lg-6 col-12" key={index}>
                 <div className="card property property-list border-0 shadow position-relative overflow-hidden rounded-3">
                   <div className="d-md-flex">
@@ -595,6 +607,7 @@ export default function HomePage({ param }) {
                 </div>
               </div>
             ))}
+            {!isGridView && <ListView items={propertyData} index={db_index} role={currentUser?currentUser.role:-99} user_id={currentUser?currentUser._id:-99}/>}
           </div>
           {/* Pagination */}
           {totalSearched > 1 && (
@@ -659,6 +672,7 @@ export default function HomePage({ param }) {
               </div>
             </div>
           )}
+          
         </div>
       </section>
       <section className="section">

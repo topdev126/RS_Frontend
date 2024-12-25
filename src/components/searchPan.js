@@ -73,6 +73,8 @@ const SearchPan = ({
   setAddressKeys,
   nameKeys,
   setNameKeys,
+  wordKeys,
+  setWordKeys,
   searchloading,
 }) => {
   // const [searchKeywords, setSearchKeywords] = useState("");
@@ -141,6 +143,7 @@ const SearchPan = ({
     setSelectedFurnishing([]);
     // setSearchKeywords("");
     setNameKeys("");
+    setWordKeys("")
     setAddressKeys("");
     setDevNameKeys("");
     setTenureKeys("");
@@ -191,7 +194,6 @@ const SearchPan = ({
     resetSearchParams();
   }, [db_index]);
 
-
   return (
     <div className="mt-4">
       <div className="tab-content bg-white rounded-3 sm-rounded-0 shadow">
@@ -201,21 +203,20 @@ const SearchPan = ({
               <div className="row g-lg-0">
                 <div className="col-lg-3 col-md-6 col-12">
                   <div className="mb-3">
-                    <label className="form-label fs-6">Name :</label>
+                    <label className="form-label fs-6">Word :</label>
                     <div className="filter-search-form position-relative filter-border">
                       <FaUser className="fea icon-ex-md icons" />
                       <input
                         name="name"
                         type="text"
                         className="form-control filter-input-box bg-light border-0"
-                        placeholder="Search by Name"
-                        value={nameKeys}
-                        onChange={(e) => setNameKeys(e.target.value)}
+                        placeholder="Search by Any Word"
+                        value={wordKeys}
+                        onChange={(e) => setWordKeys(e.target.value)}
                       />
                     </div>
                   </div>
                 </div>
-
                 <SearchSelect
                   labelName="District"
                   Props={Districts}
@@ -336,7 +337,22 @@ const SearchPan = ({
                         </div>
                       </div>
                     </div>
-
+                    <div className="col-lg-3 col-md-6 col-12">
+                      <div className="mb-3">
+                        <label className="form-label fs-6">Name :</label>
+                        <div className="filter-search-form position-relative filter-border">
+                          <FaUser className="fea icon-ex-md icons" />
+                          <input
+                            name="name"
+                            type="text"
+                            className="form-control filter-input-box bg-light border-0"
+                            placeholder="Search by Name"
+                            value={nameKeys}
+                            onChange={(e) => setNameKeys(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
                     <div className="col-lg-3 col-md-6 col-12">
                       <div className="mb-3">
                         <label className="form-label fs-6">Address :</label>
@@ -371,6 +387,22 @@ const SearchPan = ({
                     </div>
                     {(db_index === 2 || db_index === 3) && (
                       <>
+                        <div className="col-lg-3 col-md-6 col-12">
+                          <div className="mb-3">
+                            <label className="form-label fs-6">Tenure :</label>
+                            <div className="filter-search-form position-relative filter-border">
+                              <FaCalendarAlt className="fea icon-ex-md icons" />
+                              <input
+                                name="name"
+                                type="text"
+                                className="form-control filter-input-box bg-light border-0"
+                                placeholder="Search by Tenure"
+                                value={tenureKeys}
+                                onChange={(e) => setTenureKeys(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                        </div>
                         <SearchSelect
                           labelName="Number of Beds"
                           Props={BedsNums}
@@ -411,22 +443,6 @@ const SearchPan = ({
                           Icon={FaCouch}
                           col={3}
                         />
-                        <div className="col-lg-3 col-md-6 col-12">
-                          <div className="mb-3">
-                            <label className="form-label fs-6">Tenure :</label>
-                            <div className="filter-search-form position-relative filter-border">
-                              <FaCalendarAlt className="fea icon-ex-md icons" />
-                              <input
-                                name="name"
-                                type="text"
-                                className="form-control filter-input-box bg-light border-0"
-                                placeholder="Search by Tenure"
-                                value={tenureKeys}
-                                onChange={(e) => setTenureKeys(e.target.value)}
-                              />
-                            </div>
-                          </div>
-                        </div>
                       </>
                     )}
                   </>

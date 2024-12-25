@@ -177,9 +177,12 @@ export default function AdminPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     })
-      .then((response) => response.json())
-      .then((data) => {})
-      .catch((error) => {});
+      .then((response) => {
+        if (response.status === 200) toast.success("Successfully Updated Password")
+        else if (response.status === 422) toast.warning("Not Matched Password")
+        else if (response.status === 401) toast.warning("Not exact Old password")
+        else if (response.status === 500) toast.error("Internal Server Error")})
+      .catch((error) => {toast.error("Failed Updating Password")});
   };
   const roleChange = (id, event) => {
     const payload = {
